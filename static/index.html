@@ -99,6 +99,25 @@
           </div>
         </div>
 
+        <!-- 每日一句心靈指引（師父開示祐維珍藏版） -->
+        <div class="card guidance-card">
+          <div class="card-header">
+            <span class="card-title">&#128220; 每日一句指引</span>
+            <span id="guidance-counter" class="card-tag">&#10024; 師父開示</span>
+          </div>
+          <div class="guidance-body">
+            <div class="guidance-topic" id="guidance-topic">載入中...</div>
+            <div class="guidance-quote" id="guidance-quote">「...」</div>
+            <div class="guidance-desc" id="guidance-desc">...</div>
+            <div class="guidance-controls">
+              <button type="button" id="btn-guide-listen" class="retro-btn btn-guide-play">&#128266; 慢慢聆聽</button>
+              <button type="button" id="btn-guide-repeat" class="retro-sub-btn">&#128257; 循環: 關</button>
+              <button type="button" id="btn-guide-next" class="retro-sub-btn">&#127922; 換下一句</button>
+            </div>
+            <audio id="guidance-player" preload="none"></audio>
+          </div>
+        </div>
+
         <!-- 留言板 -->
         <div class="card message-card">
           <div class="card-header">

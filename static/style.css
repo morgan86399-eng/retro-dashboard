@@ -1230,3 +1230,78 @@ body.theme-matrix .btn-play {
   }
 }
 
+/* ============================================================
+   8. Daily Master Guidance Module (師父提點祐維 每日心靈指引)
+   ============================================================ */
+.guidance-card {
+  margin-bottom: 10px;
+}
+
+.guidance-body {
+  padding: 4px 2px;
+  text-align: center;
+}
+
+.guidance-topic {
+  font-size: 13px;
+  font-weight: bold;
+  color: #38bdf8;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.guidance-quote {
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1.45;
+  margin-bottom: 8px;
+  padding: 0 4px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+}
+
+.guidance-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.guidance-controls {
+  display: -webkit-box;
+  display: box;
+  width: 100%;
+}
+
+.guidance-controls .btn-guide-play {
+  -webkit-box-flex: 2;
+  box-flex: 2;
+  margin-right: 6px;
+  background-color: #0284c7;
+  background-image: -webkit-linear-gradient(top, #0ea5e9 0%, #0369a1 100%);
+  background-image: linear-gradient(to bottom, #0ea5e9 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.guidance-controls .btn-guide-play.playing {
+  background-color: #d97706;
+  background-image: -webkit-linear-gradient(top, #f59e0b 0%, #b45309 100%);
+  background-image: linear-gradient(to bottom, #f59e0b 0%, #b45309 100%);
+  border-color: #fbbf24;
+}
+
+.guidance-controls .retro-sub-btn {
+  -webkit-box-flex: 1;
+  box-flex: 1;
+  margin-left: 4px;
+}
+
+
