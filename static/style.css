@@ -1102,3 +1102,131 @@ body.theme-matrix .retro-btn {
 body.theme-matrix .btn-play {
   background: #005a1d;
 }
+
+/* ============================================================
+   7. Live Radio & Lofi Streaming Module (騷操作 3)
+   ============================================================ */
+.radio-card {
+  margin-top: 6px;
+}
+
+.radio-current-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.radio-title-row {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f8fafc;
+  line-height: 1.3;
+}
+
+.radio-live-dot {
+  color: #64748b;
+  font-size: 14px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.radio-live-dot.active {
+  color: #ef4444;
+  text-shadow: 0 0 6px #ef4444;
+}
+
+.radio-status-text {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.radio-grid {
+  margin-bottom: 10px;
+}
+
+.radio-station-btn {
+  display: inline-block;
+  width: 48%;
+  margin: 1%;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #cbd5e1;
+  background-color: #242b33;
+  background-image: -webkit-linear-gradient(top, #2c353f 0%, #1c2228 100%);
+  background-image: linear-gradient(to bottom, #2c353f 0%, #1c2228 100%);
+  border: 1px solid #3e4854;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+}
+
+.radio-station-btn:active,
+.radio-station-btn.active {
+  background-color: #0284c7;
+  background-image: -webkit-linear-gradient(top, #0284c7 0%, #0369a1 100%);
+  background-image: linear-gradient(to bottom, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  -webkit-box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.radio-station-name {
+  display: block;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.radio-station-genre {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: normal;
+  margin-top: 2px;
+}
+
+.radio-station-btn.active .radio-station-genre {
+  color: #e0f2fe;
+}
+
+.radio-control-row {
+  display: -webkit-box;
+  display: box;
+  width: 100%;
+}
+
+.radio-control-row .btn-radio-play {
+  -webkit-box-flex: 2;
+  box-flex: 2;
+  margin-right: 6px;
+  background-color: #059669;
+  background-image: -webkit-linear-gradient(top, #10b981 0%, #047857 100%);
+  background-image: linear-gradient(to bottom, #10b981 0%, #047857 100%);
+  border-color: #34d399;
+  color: #ffffff;
+}
+
+.radio-control-row .retro-sub-btn {
+  -webkit-box-flex: 1;
+  box-flex: 1;
+}
+
+@media screen and (min-width: 420px) {
+  .radio-station-btn {
+    width: 31.3%;
+  }
+}
+

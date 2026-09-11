@@ -40,6 +40,14 @@
     dom.themeName = document.getElementById("current-theme-name");
     dom.themeGrid = document.getElementById("theme-grid");
     dom.themeModal = document.getElementById("theme-modal");
+
+    dom.radioPlayer = document.getElementById("radio-player");
+    dom.radioDot = document.getElementById("radio-dot");
+    dom.radioTitle = document.getElementById("radio-title");
+    dom.radioStatus = document.getElementById("radio-status");
+    dom.radioGrid = document.getElementById("radio-grid");
+    dom.btnRadioPlay = document.getElementById("btn-radio-play");
+    dom.btnRadioStop = document.getElementById("btn-radio-stop");
   }
 
   // Memory-Safe Helper: AJAX GET (nulls out xhr to break closure leaks)
@@ -246,6 +254,7 @@
 
   function playTrack() {
     if (playlist.length === 0 || !dom.audio) return;
+    stopRadio();
     if (!dom.audio.src) {
       loadTrack(0);
     }
@@ -594,6 +603,126 @@
     applyTheme(savedTheme || "skeuomorphic");
   }
 
+  // 7. Live Radio & Lofi Streaming Module (騷操作 3)
+  var RADIO_STATIONS = [
+    { id: "icrt", name: "ICRT FM 100.7", genre: "西洋流行 / 英語電台", url: "https://stream.rcs.revma.com/nkdfurztxp3vv" },
+    { id: "asia", name: "亞洲電台 92.7", genre: "熱門華語流行音樂", url: "https://stream.rcs.revma.com/xpgtqc74hv8uv" },
+    { id: "lofi", name: "24/7 Lofi Chillhop", genre: "工作讀書 / 深夜放鬆", url: "https://streams.ilovemusic.de/iloveradio17.mp3" },
+    { id: "fly",  name: "飛揚調頻 89.5", genre: "懷舊金曲 / 時代老歌", url: "https://stream.rcs.revma.com/e0tdah74hv8uv" },
+    { id: "dance",name: "舞曲活力 Hits", genre: "歐美動感電音派對", url: "https://streams.ilovemusic.de/iloveradio2.mp3" },
+    { id: "asia-pac", name: "亞太電台 92.3", genre: "流行生活音樂網", url: "https://stream.rcs.revma.com/kydend74hv8uv" }
+  ];
+
+  var currentRadioIndex = 0;
+  var isRadioPlaying = false;
+
+  function selectRadioStation(idx) {
+    if (idx < 0 || idx >= RADIO_STATIONS.length) return;
+    currentRadioIndex = idx;
+    var st = RADIO_STATIONS[idx];
+
+    if (dom.radioTitle) dom.radioTitle.innerHTML = st.name;
+    if (dom.radioStatus) dom.radioStatus.innerHTML = st.genre + " &bull; 點擊收聽";
+
+    renderRadioGrid();
+
+    if (isRadioPlaying) {
+      playRadio();
+    }
+  }
+
+  function playRadio() {
+    if (!dom.radioPlayer) return;
+    // 互斥：暫停本機 MP3 播放器
+    pauseTrack();
+
+    var st = RADIO_STATIONS[currentRadioIndex];
+    if (dom.radioPlayer.src !== st.url) {
+      dom.radioPlayer.src = st.url;
+    }
+
+    if (dom.radioStatus) dom.radioStatus.innerHTML = "連線中... 正在載入即時電台";
+    dom.radioPlayer.play();
+    isRadioPlaying = true;
+
+    if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#10074;&#10074; 暫停廣播";
+    if (dom.radioDot) dom.radioDot.className = "radio-live-dot active";
+  }
+
+  function stopRadio() {
+    if (!dom.radioPlayer) return;
+    dom.radioPlayer.pause();
+    dom.radioPlayer.src = "";
+    isRadioPlaying = false;
+
+    if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#9654; 收聽電台";
+    if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
+    if (dom.radioStatus) dom.radioStatus.innerHTML = "已停止播放 &bull; 點擊頻道收聽";
+  }
+
+  function toggleRadio() {
+    if (isRadioPlaying) {
+      dom.radioPlayer.pause();
+      isRadioPlaying = false;
+      if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#9654; 繼續收聽";
+      if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
+      if (dom.radioStatus) dom.radioStatus.innerHTML = "已暫停 &bull; 點擊繼續";
+    } else {
+      playRadio();
+    }
+  }
+
+  function renderRadioGrid() {
+    if (!dom.radioGrid) return;
+    var html = "";
+    for (var i = 0; i < RADIO_STATIONS.length; i++) {
+      var s = RADIO_STATIONS[i];
+      var isActive = (i === currentRadioIndex);
+      html += '<button type="button" class="radio-station-btn ' + (isActive ? 'active' : '') + '" onclick="window.switchRadioStation(' + i + ');">';
+      html += '  <span class="radio-station-name">' + s.name + '</span>';
+      html += '  <span class="radio-station-genre">' + s.genre + '</span>';
+      html += '</button>';
+    }
+    dom.radioGrid.innerHTML = html;
+  }
+
+  function setupRadioPlayer() {
+    window.switchRadioStation = function(idx) {
+      selectRadioStation(idx);
+      playRadio();
+    };
+
+    if (dom.btnRadioPlay) {
+      dom.btnRadioPlay.onclick = function() {
+        toggleRadio();
+      };
+    }
+
+    if (dom.btnRadioStop) {
+      dom.btnRadioStop.onclick = function() {
+        stopRadio();
+      };
+    }
+
+    if (dom.radioPlayer) {
+      dom.radioPlayer.addEventListener("playing", function() {
+        if (dom.radioDot) dom.radioDot.className = "radio-live-dot active";
+        if (dom.radioStatus) {
+          var st = RADIO_STATIONS[currentRadioIndex];
+          dom.radioStatus.innerHTML = "&#9679; LIVE 現場直播中 (" + st.genre + ")";
+        }
+      }, false);
+
+      dom.radioPlayer.addEventListener("error", function() {
+        if (dom.radioStatus) dom.radioStatus.innerHTML = "電台連線忙碌中，請點選其他頻道";
+        if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
+      }, false);
+    }
+
+    renderRadioGrid();
+    selectRadioStation(0);
+  }
+
   // Initialization
   function init() {
     initDomCache();
@@ -611,6 +740,7 @@
     setInterval(fetchMessages, 60000); // every 60 sec
 
     setupMusicPlayer();
+    setupRadioPlayer();
     setupMessageForm();
     setupThemeSwitcher();
   }

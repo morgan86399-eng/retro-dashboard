@@ -119,6 +119,31 @@
       </div>
     </div>
 
+    <!-- 騷操作 3：24/7 全球即時電台 & Lofi 串流 -->
+    <div class="card radio-card">
+      <div class="card-header">
+        <span class="card-title">&#128251; 24/7 即時廣播 &amp; Lofi 電台</span>
+        <span class="card-tag" id="radio-tag">直連 CDN &bull; 0 伺服器流量</span>
+      </div>
+      <div class="radio-body">
+        <div class="radio-current-box">
+          <div class="radio-title-row">
+            <span class="radio-live-dot" id="radio-dot">&#9679;</span>
+            <span class="radio-station-title" id="radio-title">請選擇下方頻道</span>
+          </div>
+          <div class="radio-status-text" id="radio-status">24小時不間斷 &bull; 全球即時直連</div>
+        </div>
+        <div class="radio-grid" id="radio-grid">
+          <!-- 由 JS 動態生成頻道按鈕 -->
+        </div>
+        <div class="radio-control-row">
+          <button type="button" id="btn-radio-play" class="retro-btn btn-radio-play">&#9654; 收聽電台</button>
+          <button type="button" id="btn-radio-stop" class="retro-sub-btn">&#9632; 關閉廣播</button>
+        </div>
+        <audio id="radio-player" preload="none"></audio>
+      </div>
+    </div>
+
     <!-- 頁尾 -->
     <div class="footer">
       iPhone 4s Retro Dashboard &bull; iOS 6.1.3 OK
