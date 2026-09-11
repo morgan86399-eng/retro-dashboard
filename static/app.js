@@ -735,6 +735,12 @@
       dom.radioPlayer.addEventListener("error", function() {
         if (dom.radioStatus) dom.radioStatus.innerHTML = "電台連線忙碌中，請點選其他頻道";
         if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
+        try { dom.radioPlayer.pause(); } catch(e) {}
+        isRadioPlaying = false;
+      }, false);
+
+      dom.radioPlayer.addEventListener("stalled", function() {
+        if (dom.radioStatus) dom.radioStatus.innerHTML = "訊號緩衝中...";
       }, false);
     }
 
