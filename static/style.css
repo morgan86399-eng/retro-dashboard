@@ -1,0 +1,1104 @@
+/* Reset & Base Setup */
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+body {
+  background-color: #121518;
+  background-image: -webkit-linear-gradient(top, #1a1e22 0%, #101215 100%);
+  background-image: linear-gradient(to bottom, #1a1e22 0%, #101215 100%);
+  color: #e2e8f0;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Heiti TC", "微軟正黑體", sans-serif;
+  min-height: 100%;
+  padding: 8px;
+  line-height: 1.4;
+}
+
+#container {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+/* Card Styling - iOS 6 Skeuomorphic Dark Theme */
+.card {
+  background-color: #1e2328;
+  background-image: -webkit-linear-gradient(top, #262c33 0%, #191d22 100%);
+  background-image: linear-gradient(to bottom, #262c33 0%, #191d22 100%);
+  border: 1px solid #363e46;
+  border-bottom-color: #22272c;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  margin-bottom: 10px;
+  padding: 10px 12px;
+}
+
+.card-header {
+  border-bottom: 1px solid #2d343b;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-tag {
+  float: right;
+  background: #334155;
+  color: #38bdf8;
+  font-size: 11px;
+  padding: 2px 6px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+.card-sub {
+  float: right;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 1. Clock Card */
+.clock-card {
+  text-align: center;
+  padding: 12px 10px;
+  background-image: -webkit-linear-gradient(top, #222930 0%, #14181c 100%);
+  background-image: linear-gradient(to bottom, #222930 0%, #14181c 100%);
+}
+
+#clock-time {
+  font-size: 38px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 240, 255, 0.35);
+  font-family: "Courier New", Courier, monospace, sans-serif;
+}
+
+#clock-date {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* 2. Weather Card */
+.weather-body {
+  overflow: hidden;
+}
+
+.weather-temp-box {
+  float: left;
+  width: 45%;
+}
+
+.weather-temp {
+  font-size: 36px;
+  font-weight: bold;
+  color: #f8fafc;
+  line-height: 1;
+}
+
+.weather-unit {
+  font-size: 18px;
+  color: #94a3b8;
+  vertical-align: super;
+}
+
+.weather-info {
+  float: right;
+  width: 55%;
+  text-align: right;
+}
+
+.weather-desc {
+  font-size: 18px;
+  font-weight: bold;
+  color: #38bdf8;
+  margin-bottom: 2px;
+}
+
+.weather-sub {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 3. Stock Card */
+.stock-list {
+  margin-top: 4px;
+}
+
+.stock-item {
+  border-bottom: 1px solid #283038;
+  padding: 6px 0;
+  overflow: hidden;
+}
+
+.stock-item:last-child {
+  border-bottom: none;
+}
+
+.primary-stock {
+  background: rgba(255,255,255,0.04);
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid #36404a;
+  padding: 8px 8px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.primary-stock:active {
+  background: rgba(255,255,255,0.1);
+}
+
+.stock-name {
+  font-size: 13px;
+  color: #cbd5e1;
+  float: left;
+  line-height: 20px;
+}
+
+.stock-toggle-hint {
+  font-size: 10px;
+  color: #38bdf8;
+  display: block;
+}
+
+.us-stocks-wrapper {
+  background: rgba(0,0,0,0.25);
+  border: 1px dashed #2d3748;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-top: 6px;
+}
+
+.us-stocks-header {
+  font-size: 10px;
+  color: #64748b;
+  border-bottom: 1px solid #232a32;
+  padding: 2px 0 4px 0;
+  margin-bottom: 2px;
+}
+
+.stock-digits {
+  float: right;
+  text-align: right;
+}
+
+.stock-price {
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  display: block;
+}
+
+.stock-change {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 台灣紅漲綠跌 */
+.stock-up {
+  color: #ff4757 !important;
+}
+
+.stock-down {
+  color: #2ed573 !important;
+}
+
+/* 4. Music Player Card */
+.music-body {
+  text-align: center;
+  padding-top: 4px;
+}
+
+.music-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #38bdf8;
+  background-image: -webkit-linear-gradient(top, #67e8f9 0%, #0284c7 100%);
+  background-image: linear-gradient(to bottom, #67e8f9 0%, #0284c7 100%);
+}
+
+.music-time-row {
+  overflow: hidden;
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.music-time-row span:first-child {
+  float: left;
+}
+
+.music-time-row span:last-child {
+  float: right;
+}
+
+.music-mode-row {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.retro-sub-btn {
+  display: inline-block;
+  background-color: #1e293b;
+  background-image: -webkit-linear-gradient(top, #334155 0%, #1e293b 100%);
+  background-image: linear-gradient(to bottom, #334155 0%, #1e293b 100%);
+  border: 1px solid #475569;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 10px;
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin: 0 4px;
+}
+
+.retro-sub-btn.active {
+  background-color: #0369a1;
+  background-image: -webkit-linear-gradient(top, #0284c7 0%, #0369a1 100%);
+  background-image: linear-gradient(to bottom, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  -webkit-box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+}
+
+.music-controls {
+  text-align: center;
+}
+
+/* Retro Buttons */
+.retro-btn {
+  display: inline-block;
+  background-color: #334155;
+  background-image: -webkit-linear-gradient(top, #475569 0%, #1e293b 100%);
+  background-image: linear-gradient(to bottom, #475569 0%, #1e293b 100%);
+  border: 1px solid #64748b;
+  border-bottom-color: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 16px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  margin: 0 3px;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+}
+
+.retro-btn:active {
+  background-image: -webkit-linear-gradient(top, #1e293b 0%, #334155 100%);
+  background-image: linear-gradient(to bottom, #1e293b 0%, #334155 100%);
+  -webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.btn-play {
+  min-width: 90px;
+  background-color: #0284c7;
+  background-image: -webkit-linear-gradient(top, #38bdf8 0%, #0369a1 100%);
+  background-image: linear-gradient(to bottom, #38bdf8 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  border-bottom-color: #0c4a6e;
+}
+
+/* 5. Message Board Card */
+.msg-form {
+  margin-bottom: 8px;
+}
+
+.retro-input {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 6px 8px;
+  font-size: 13px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  outline: none;
+}
+
+.retro-input:focus {
+  border-color: #38bdf8;
+}
+
+.author-input {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.msg-input-row {
+  overflow: hidden;
+}
+
+.content-input {
+  float: left;
+  width: 72%;
+}
+
+.btn-send {
+  float: right;
+  width: 25%;
+  padding: 6px 0;
+  font-size: 12px;
+}
+
+.message-list {
+  max-height: 160px;
+  overflow-y: auto;
+  border-top: 1px solid #283038;
+  padding-top: 6px;
+}
+
+.msg-item {
+  border-bottom: 1px solid #242a32;
+  padding: 5px 0;
+  font-size: 12px;
+}
+
+.msg-item:last-child {
+  border-bottom: none;
+}
+
+.msg-header-row {
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.msg-author-name {
+  float: left;
+  font-weight: bold;
+  color: #38bdf8;
+  font-size: 12px;
+}
+
+.msg-time-tag {
+  float: right;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.msg-text-content {
+  color: #cbd5e1;
+  word-break: break-all;
+  font-size: 12px;
+}
+
+.msg-loading {
+  text-align: center;
+  color: #64748b;
+  font-size: 11px;
+  padding: 10px 0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 10px;
+  color: #475569;
+  padding: 10px 0 16px 0;
+  clear: both;
+}
+
+/* Columns Base Setup */
+.dashboard-columns {
+  width: 100%;
+}
+
+.col-left, .col-right {
+  width: 100%;
+  float: none;
+}
+
+/* 橫版 (Landscape) 專屬佈局：寬度 >= 420px 或 橫向螢幕 */
+@media screen and (orientation: landscape), screen and (min-width: 420px) {
+  body {
+    padding: 6px 8px;
+  }
+
+  #container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .dashboard-columns {
+    overflow: hidden;
+  }
+
+  /* 雙欄左右並排 (Left: 時鐘/天氣/音樂, Right: 大盤/留言板) */
+  .col-left {
+    float: left;
+    width: 49%;
+  }
+
+  .col-right {
+    float: right;
+    width: 49%;
+  }
+
+  .card {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+  }
+
+  /* 時鐘在橫版稍微緊湊但字體清晰 */
+  #clock-time {
+    font-size: 26px;
+  }
+
+  #clock-date {
+    font-size: 11px;
+  }
+
+  /* 天氣在橫版緊湊排列 */
+  .weather-temp {
+    font-size: 26px;
+  }
+
+  .weather-desc {
+    font-size: 14px;
+  }
+
+  .weather-sub {
+    font-size: 10px;
+  }
+
+  /* 音樂卡片緊湊化 */
+  .music-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .retro-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .btn-play {
+    min-width: 70px;
+  }
+
+  .retro-sub-btn {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  /* 留言板高度限制防止超出 */
+  .message-list {
+    max-height: 100px;
+  }
+}
+
+
+/* ==========================================================
+   TOP BAR & THEME SWITCHER
+   ========================================================== */
+.top-bar {
+  overflow: hidden;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.theme-switch-btn {
+  float: left;
+  background-color: #272f38;
+  background-image: -webkit-linear-gradient(top, #36414e 0%, #1e252d 100%);
+  background-image: linear-gradient(to bottom, #36414e 0%, #1e252d 100%);
+  border: 1px solid #4a5768;
+  border-bottom-color: #12161b;
+  color: #f1f5f9;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 5px 10px;
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.theme-switch-btn:active {
+  background-image: -webkit-linear-gradient(top, #1e252d 0%, #36414e 100%);
+  background-image: linear-gradient(to bottom, #1e252d 0%, #36414e 100%);
+}
+
+.theme-next-btn {
+  float: right;
+  background-color: #272f38;
+  background-image: -webkit-linear-gradient(top, #36414e 0%, #1e252d 100%);
+  background-image: linear-gradient(to bottom, #36414e 0%, #1e252d 100%);
+  border: 1px solid #4a5768;
+  color: #38bdf8;
+  font-size: 12px;
+  font-weight: bold;
+  width: 32px;
+  height: 25px;
+  line-height: 23px;
+  text-align: center;
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   THEME MODAL
+   ========================================================== */
+.theme-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}
+
+.theme-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+}
+
+.theme-modal-box {
+  position: relative;
+  background: #181d24;
+  background-image: -webkit-linear-gradient(top, #202630 0%, #12161b 100%);
+  background-image: linear-gradient(to bottom, #202630 0%, #12161b 100%);
+  border: 1px solid #475569;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  max-width: 310px;
+  margin: 15px auto;
+  padding: 10px;
+  -webkit-box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+  z-index: 10000;
+}
+
+.theme-modal-header {
+  overflow: hidden;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.theme-modal-title {
+  float: left;
+  font-size: 13px;
+  font-weight: bold;
+  color: #f8fafc;
+}
+
+.theme-close-btn {
+  float: right;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 14px;
+}
+
+.theme-grid {
+  max-height: 270px;
+  overflow-y: auto;
+}
+
+.theme-option-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #1e252e;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  padding: 7px 10px;
+  margin-bottom: 5px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+.theme-option-item:active {
+  background: #2d3748;
+}
+
+.theme-option-item.active {
+  border-color: #38bdf8;
+  background: #0f273d;
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+.theme-preview-color {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  vertical-align: middle;
+  margin-right: 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* ==========================================================
+   BASE CLOCK BEZEL & FACE
+   ========================================================== */
+.clock-card {
+  padding: 6px;
+  text-align: center;
+}
+
+.clock-bezel {
+  padding: 4px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+
+.clock-face {
+  padding: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+}
+
+/* ==========================================================
+   10 THEMES DEFINITIONS
+   ========================================================== */
+
+/* --- 1. 經典擬物 (Skeuomorphic) --- */
+body.theme-skeuomorphic {
+  background-color: #121518;
+  background-image: -webkit-linear-gradient(top, #1a1e22 0%, #101215 100%);
+  color: #e2e8f0;
+}
+body.theme-skeuomorphic .clock-bezel {
+  border: 2px solid #36414e;
+  background-image: -webkit-linear-gradient(top, #2b343f 0%, #192027 100%);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 5px rgba(0,0,0,0.6);
+}
+body.theme-skeuomorphic .clock-face {
+  background: #0d1013;
+  border: 1px solid #1c232b;
+  -webkit-box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+}
+body.theme-skeuomorphic #clock-time {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0,240,255,0.4);
+  font-family: "Courier New", Courier, monospace;
+}
+body.theme-skeuomorphic #clock-date {
+  color: #94a3b8;
+}
+
+/* --- 2. 賽博龐克 (Cyberpunk Neon) --- */
+body.theme-cyberpunk {
+  background-color: #07070a;
+  background-image: -webkit-linear-gradient(top, #140726 0%, #05040a 100%);
+  color: #f1f5f9;
+}
+body.theme-cyberpunk .card {
+  background-color: #0e051c;
+  background-image: -webkit-linear-gradient(top, #180a30 0%, #090314 100%);
+  border: 1px solid #00f0ff;
+  -webkit-box-shadow: 0 0 8px rgba(0,240,255,0.25);
+  box-shadow: 0 0 8px rgba(0,240,255,0.25);
+}
+body.theme-cyberpunk .card-title { color: #00f0ff; }
+body.theme-cyberpunk .clock-bezel {
+  border: 2px solid #ff007f;
+  background-color: #1a042e;
+  background-image: -webkit-linear-gradient(top, #290847 0%, #110220 100%);
+  -webkit-box-shadow: 0 0 10px rgba(255,0,127,0.5), inset 0 0 8px rgba(0,240,255,0.3);
+}
+body.theme-cyberpunk .clock-face {
+  background: #090014;
+  border: 1px dashed #00f0ff;
+}
+body.theme-cyberpunk #clock-time {
+  color: #ff007f;
+  text-shadow: 0 0 10px #ff007f, 0 0 20px #00f0ff;
+  font-family: "Impact", "Arial Black", sans-serif;
+  letter-spacing: 2px;
+}
+body.theme-cyberpunk #clock-date {
+  color: #00f0ff;
+  text-shadow: 0 0 6px #00f0ff;
+}
+body.theme-cyberpunk .btn-play {
+  background-image: -webkit-linear-gradient(top, #ff007f 0%, #a80053 100%);
+  border-color: #ff007f;
+}
+
+/* --- 3. 黑金奢華 (Luxury Gold) --- */
+body.theme-luxury-gold {
+  background-color: #080705;
+  background-image: -webkit-linear-gradient(top, #14110b 0%, #050504 100%);
+  color: #fef08a;
+}
+body.theme-luxury-gold .card {
+  background-color: #120f09;
+  background-image: -webkit-linear-gradient(top, #1a150c 0%, #0c0a06 100%);
+  border: 1px solid #d4af37;
+  -webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,215,0,0.2);
+}
+body.theme-luxury-gold .card-title { color: #d4af37; }
+body.theme-luxury-gold .clock-bezel {
+  border: 3px double #d4af37;
+  background-image: -webkit-linear-gradient(top, #2b2313 0%, #151108 100%);
+  -webkit-box-shadow: 0 0 10px rgba(212,175,55,0.3);
+}
+body.theme-luxury-gold .clock-face {
+  background: #090805;
+  border: 1px solid #7c621d;
+}
+body.theme-luxury-gold #clock-time {
+  color: #ffd700;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-weight: normal;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 6px rgba(255,215,0,0.6);
+}
+body.theme-luxury-gold #clock-date {
+  color: #d4af37;
+  font-family: "Georgia", serif;
+}
+body.theme-luxury-gold .btn-play {
+  background-image: -webkit-linear-gradient(top, #eab308 0%, #a16207 100%);
+  border-color: #ffd700;
+  color: #000;
+}
+
+/* --- 4. 80年代卡帶 (80s Vaporwave) --- */
+body.theme-vaporwave {
+  background-color: #17072b;
+  background-image: -webkit-linear-gradient(top, #2d0e52 0%, #0d021c 100%);
+  color: #fed7aa;
+}
+body.theme-vaporwave .card {
+  background-color: #230c3d;
+  background-image: -webkit-linear-gradient(top, #321255 0%, #19072c 100%);
+  border: 1px solid #f472b6;
+  -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.6);
+}
+body.theme-vaporwave .card-title { color: #f472b6; }
+body.theme-vaporwave .clock-bezel {
+  border: 3px solid #ff71ce;
+  background-image: -webkit-linear-gradient(top, #4a154b 0%, #20003b 100%);
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+body.theme-vaporwave .clock-face {
+  background: #110022;
+  border: 1px solid #01cdfe;
+}
+body.theme-vaporwave #clock-time {
+  color: #ff9f43;
+  text-shadow: 0 0 8px #ff71ce;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+body.theme-vaporwave #clock-date {
+  color: #01cdfe;
+}
+body.theme-vaporwave .btn-play {
+  background-image: -webkit-linear-gradient(top, #ec4899 0%, #be185d 100%);
+  border-color: #f472b6;
+}
+
+/* --- 5. 極光翡翠 (Emerald Aurora) --- */
+body.theme-emerald {
+  background-color: #03120e;
+  background-image: -webkit-linear-gradient(top, #08261e 0%, #020b08 100%);
+  color: #a7f3d0;
+}
+body.theme-emerald .card {
+  background-color: #09241b;
+  background-image: -webkit-linear-gradient(top, #0e3427 0%, #061913 100%);
+  border: 1px solid #10b981;
+  -webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(16,185,129,0.2);
+}
+body.theme-emerald .card-title { color: #34d399; }
+body.theme-emerald .clock-bezel {
+  border: 2px solid #34d399;
+  background-image: -webkit-linear-gradient(top, #064e3b 0%, #022c22 100%);
+  -webkit-box-shadow: 0 0 10px rgba(52,211,153,0.3);
+}
+body.theme-emerald .clock-face {
+  background: #011d15;
+  border: 1px solid #059669;
+}
+body.theme-emerald #clock-time {
+  color: #6ee7b7;
+  text-shadow: 0 0 12px rgba(110,231,183,0.7);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: bold;
+}
+body.theme-emerald #clock-date {
+  color: #34d399;
+}
+body.theme-emerald .btn-play {
+  background-image: -webkit-linear-gradient(top, #10b981 0%, #047857 100%);
+  border-color: #34d399;
+}
+
+/* --- 6. 和風原木 (Zen Wood) --- */
+body.theme-zen-wood {
+  background-color: #17120e;
+  background-image: -webkit-linear-gradient(top, #241c16 0%, #0e0a07 100%);
+  color: #f5ebe0;
+}
+body.theme-zen-wood .card {
+  background-color: #251c15;
+  background-image: -webkit-linear-gradient(top, #30241b 0%, #1c140f 100%);
+  border: 1px solid #5c4331;
+  -webkit-box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+}
+body.theme-zen-wood .card-title { color: #c4a482; }
+body.theme-zen-wood .clock-bezel {
+  border: 3px solid #7c583f;
+  background-image: -webkit-linear-gradient(top, #3d2c1f 0%, #20150e 100%);
+  border-top-color: #9d7153;
+  -webkit-box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.8);
+}
+body.theme-zen-wood .clock-face {
+  background: #1a120b;
+  border: 1px solid #4a3424;
+}
+body.theme-zen-wood #clock-time {
+  color: #eed9c4;
+  font-family: "Heiti TC", "LiHei Pro", "微軟正黑體", sans-serif;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+body.theme-zen-wood #clock-date {
+  color: #c4a482;
+}
+body.theme-zen-wood .btn-play {
+  background-image: -webkit-linear-gradient(top, #8d5b4c 0%, #5a382e 100%);
+  border-color: #8d5b4c;
+}
+
+/* --- 7. 太空穿梭機 (Sci-Fi Shuttle) --- */
+body.theme-scifi-shuttle {
+  background-color: #0b1118;
+  background-image: -webkit-linear-gradient(top, #131c26 0%, #070a0e 100%);
+  color: #fed7aa;
+}
+body.theme-scifi-shuttle .card {
+  background-color: #141d28;
+  background-image: -webkit-linear-gradient(top, #1b2635 0%, #0f1620 100%);
+  border: 1px solid #3b4b5e;
+  border-left: 4px solid #f97316;
+  -webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+}
+body.theme-scifi-shuttle .card-title { color: #f97316; }
+body.theme-scifi-shuttle .clock-bezel {
+  border: 2px solid #f97316;
+  background-image: -webkit-linear-gradient(top, #293545 0%, #121922 100%);
+  border-top: 4px solid #f97316;
+}
+body.theme-scifi-shuttle .clock-face {
+  background: #090e14;
+  border: 1px solid #232d3a;
+}
+body.theme-scifi-shuttle #clock-time {
+  color: #fb923c;
+  text-shadow: 0 0 8px rgba(249,115,22,0.6);
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+body.theme-scifi-shuttle #clock-date {
+  color: #fdba74;
+}
+body.theme-scifi-shuttle .btn-play {
+  background-image: -webkit-linear-gradient(top, #ea580c 0%, #9a3412 100%);
+  border-color: #fb923c;
+}
+
+/* --- 8. 法式玫瑰金 (Rose Gold) --- */
+body.theme-rose-gold {
+  background-color: #170d12;
+  background-image: -webkit-linear-gradient(top, #291520 0%, #0e060a 100%);
+  color: #ffe4e6;
+}
+body.theme-rose-gold .card {
+  background-color: #27141f;
+  background-image: -webkit-linear-gradient(top, #351b2a 0%, #1c0e16 100%);
+  border: 1px solid #e0a899;
+  -webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,228,230,0.15);
+}
+body.theme-rose-gold .card-title { color: #e0a899; }
+body.theme-rose-gold .clock-bezel {
+  border: 2px solid #e0a899;
+  background-image: -webkit-linear-gradient(top, #422031 0%, #1e0d16 100%);
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+  -webkit-box-shadow: 0 0 10px rgba(224,168,153,0.3);
+}
+body.theme-rose-gold .clock-face {
+  background: #14070e;
+  border: 1px solid #83445b;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+body.theme-rose-gold #clock-time {
+  color: #fbcfe8;
+  font-family: "Baskerville", "Georgia", serif;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(251,207,232,0.4);
+}
+body.theme-rose-gold #clock-date {
+  color: #e0a899;
+}
+body.theme-rose-gold .btn-play {
+  background-image: -webkit-linear-gradient(top, #f43f5e 0%, #be123c 100%);
+  border-color: #f43f5e;
+}
+
+/* --- 9. Game Boy 懷舊 (8-Bit Retro) --- */
+body.theme-gameboy {
+  background-color: #7b7b75;
+  background-image: -webkit-linear-gradient(top, #8f8f88 0%, #686862 100%);
+  color: #0f380f;
+}
+body.theme-gameboy .card {
+  background-color: #50504b;
+  border: 2px solid #2f2f2b;
+  color: #9bbc0f;
+  -webkit-box-shadow: 2px 2px 0 #1f1f1d;
+  box-shadow: 2px 2px 0 #1f1f1d;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+body.theme-gameboy .card-title {
+  color: #8bac0f;
+  font-family: "Courier New", monospace;
+}
+body.theme-gameboy .clock-bezel {
+  border: 4px solid #2f2f2b;
+  background: #686860;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+body.theme-gameboy .clock-face {
+  background: #9bbc0f;
+  border: 2px solid #8bac0f;
+  -webkit-box-shadow: inset 1px 1px 4px #8bac0f;
+  box-shadow: inset 1px 1px 4px #8bac0f;
+}
+body.theme-gameboy #clock-time {
+  color: #0f380f;
+  text-shadow: none;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+body.theme-gameboy #clock-date {
+  color: #306230;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+body.theme-gameboy .retro-btn {
+  background: #8b1d5c;
+  border-color: #4a0c30;
+  color: #ffffff;
+  -webkit-border-radius: 16px;
+  border-radius: 16px;
+}
+body.theme-gameboy .btn-play {
+  background: #1f6b8b;
+  border-color: #0e3749;
+}
+
+/* --- 10. 終端黑客 (Matrix Terminal) --- */
+body.theme-matrix {
+  background-color: #000000;
+  background-image: none;
+  color: #00ff66;
+  font-family: "Courier New", monospace;
+}
+body.theme-matrix .card {
+  background: #040c05;
+  border: 1px solid #00ff66;
+  -webkit-box-shadow: 0 0 6px rgba(0,255,102,0.3);
+  box-shadow: 0 0 6px rgba(0,255,102,0.3);
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+body.theme-matrix .card-title { color: #00ff66; }
+body.theme-matrix .clock-bezel {
+  border: 2px solid #00ff66;
+  background: #011405;
+  -webkit-box-shadow: inset 0 0 10px rgba(0,255,102,0.3), 0 0 8px rgba(0,255,102,0.4);
+}
+body.theme-matrix .clock-face {
+  background: #000802;
+  border: 1px dashed #008833;
+}
+body.theme-matrix #clock-time {
+  color: #00ff66;
+  text-shadow: 0 0 10px #00ff66, 0 0 20px #00ff66;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+body.theme-matrix #clock-date {
+  color: #00cc55;
+  font-family: "Courier New", monospace;
+}
+body.theme-matrix .retro-btn {
+  background: #002b0e;
+  border: 1px solid #00ff66;
+  color: #00ff66;
+  -webkit-box-shadow: 0 0 4px #00ff66;
+}
+body.theme-matrix .btn-play {
+  background: #005a1d;
+}
