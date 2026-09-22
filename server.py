@@ -206,6 +206,93 @@ def route_yql():
             print(f"[DGW ERROR] {e}")
     return forward_to_tuberepair()
 
+# ============================================================
+# Passbook 擬物黑卡 & 經典遊戲 OTA 無線安裝市集
+# ============================================================
+@app.route("/store")
+@app.route("/retro_store")
+def route_store():
+    response = send_from_directory(STATIC_DIR, "store.html")
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
+@app.route("/pass/vip.pkpass")
+def route_vip_pass():
+    try:
+        import pass_generator
+        pkpass_data = pass_generator.generate_vip_pass()
+        resp = Response(pkpass_data, mimetype="application/vnd.apple.pkpass")
+        resp.headers["Content-Disposition"] = "attachment; filename=vip.pkpass"
+        return resp
+    except Exception as e:
+        return f"Pass Generation Error: {e}", 500
+
+RETRO_APPS = {
+    "angrybirds": {
+        "title": "Angry Birds (憤怒鳥 1.0)",
+        "bundle_id": "com.clickgamer.AngryBirds",
+        "version": "1.0",
+        "ipa": "angrybirds.ipa"
+    },
+    "catphysics": {
+        "title": "Cat Physics (貓咪物理)",
+        "bundle_id": "com.donutgames.catphysics",
+        "version": "1.10",
+        "ipa": "catphysics.ipa"
+    },
+    "castlesmasher": {
+        "title": "Castle Smasher (城堡粉碎者)",
+        "bundle_id": "com.donutgames.castlesmasher",
+        "version": "1.0",
+        "ipa": "castlesmasher.ipa"
+    }
+}
+
+@app.route("/manifest/<appid>.plist")
+def route_manifest(appid):
+    app_info = RETRO_APPS.get(appid)
+    if not app_info:
+        abort(404)
+    host = request.host
+    ipa_url = f"http://{host}/ipa/{app_info['ipa']}"
+    manifest = f"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>assets</key>
+            <array>
+                <dict>
+                    <key>kind</key>
+                    <string>software-package</string>
+                    <key>url</key>
+                    <string>{ipa_url}</string>
+                </dict>
+            </array>
+            <key>metadata</key>
+            <dict>
+                <key>bundle-identifier</key>
+                <string>{app_info['bundle_id']}</string>
+                <key>bundle-version</key>
+                <string>{app_info['version']}</string>
+                <key>kind</key>
+                <string>software</string>
+                <key>title</key>
+                <string>{app_info['title']}</string>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>"""
+    return Response(manifest, mimetype="application/xml")
+
+@app.route("/ipa/<path:filename>")
+def serve_ipa(filename):
+    ipa_dir = os.path.join(BASE_DIR, "ipa")
+    return send_from_directory(ipa_dir, filename, conditional=True)
+
 @app.route("/ClientLogin", methods=["GET", "POST", "HEAD"])
 def route_clientlogin():
     return forward_to_tuberepair()
