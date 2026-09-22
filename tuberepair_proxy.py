@@ -457,10 +457,11 @@ def _get_stream_url(video_id):
             "-g", f"https://www.youtube.com/watch?v={video_id}"
         ], timeout=25)
         out = res.stdout.strip().splitlines()
-        if out and out[0].startswith("http"):
-            url = out[0]
-            STREAM_URL_CACHE[video_id] = (now, url)
-            return url
+        for line in out:
+            l = line.strip()
+            if l.startswith("http"):
+                STREAM_URL_CACHE[video_id] = (now, l)
+                return l
     except Exception as e:
         print(f"[get_stream_url format 18 err] {e}")
 
@@ -472,10 +473,11 @@ def _get_stream_url(video_id):
             "-g", f"https://www.youtube.com/watch?v={video_id}"
         ], timeout=25)
         out = res.stdout.strip().splitlines()
-        if out and out[0].startswith("http"):
-            url = out[0]
-            STREAM_URL_CACHE[video_id] = (now, url)
-            return url
+        for line in out:
+            l = line.strip()
+            if l.startswith("http"):
+                STREAM_URL_CACHE[video_id] = (now, l)
+                return l
     except Exception as e:
         print(f"[get_stream_url fallback err] {e}")
 
@@ -500,10 +502,11 @@ def _get_generic_stream_url(video_url):
             "-f", "18/best[ext=mp4]/best[height<=480]/best",
             "-g", video_url
         ], timeout=20)
-        direct = res.stdout.strip().splitlines()[0]
-        if direct.startswith("http"):
-            GENERIC_STREAM_CACHE[video_url] = (now, direct)
-            return direct
+        for line in res.stdout.strip().splitlines():
+            l = line.strip()
+            if l.startswith("http"):
+                GENERIC_STREAM_CACHE[video_url] = (now, l)
+                return l
     except Exception as e:
         print(f"[generic_stream_url err] {e}")
 
@@ -585,6 +588,9 @@ class Handler(BaseHTTPRequestHandler):
         base = self._base_url()
         if qs is None:
             qs = {}
+        query = unquote(query or "").strip()
+        if not query:
+            return self._handle_trending("recently_featured", qs=qs)
         try:
             start_index = int(qs.get("start-index", [1])[0])
         except Exception:
