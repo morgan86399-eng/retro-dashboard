@@ -194,6 +194,16 @@ def route_schemas(subpath=""):
 @app.route("/v1/yql", methods=["GET", "POST", "HEAD"])
 @app.route("/dgw", methods=["GET", "POST", "HEAD"])
 def route_yql():
+    if request.path == "/dgw":
+        body = request.get_data()
+        try:
+            import stocks_bridge
+            xml_resp = stocks_bridge.handle_dgw(body)
+            with open("/tmp/dgw_debug.log", "ab") as f:
+                f.write(f"\n=== DGW REQ ===\n{body.decode('utf-8', errors='replace')}\n=== DGW RESP ===\n{xml_resp.decode('utf-8', errors='replace')}\n".encode("utf-8"))
+            return Response(xml_resp, mimetype="text/xml; charset=utf-8")
+        except Exception as e:
+            print(f"[DGW ERROR] {e}")
     return forward_to_tuberepair()
 
 @app.route("/ClientLogin", methods=["GET", "POST", "HEAD"])

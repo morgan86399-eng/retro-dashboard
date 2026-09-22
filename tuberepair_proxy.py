@@ -1014,6 +1014,19 @@ fi
             xml = _weather_multi_xml(woeids, lat=lat, lon=lon)
             self._send_weather_xml(xml)
 
+    def _handle_stocks_dgw(self, parsed, post_body):
+        try:
+            import stocks_bridge
+            xml_resp = stocks_bridge.handle_dgw(post_body)
+        except Exception as e:
+            print(f"[STOCKS PROXY ERROR] {e}")
+            xml_resp = b'<?xml version="1.0" encoding="utf-8"?><response></response>'
+        self.send_response(200)
+        self.send_header("Content-Type", "text/xml; charset=utf-8")
+        self.send_header("Content-Length", str(len(xml_resp)))
+        self.end_headers()
+        self.wfile.write(xml_resp)
+
     def _send_web_home(self):
         base = self._base_url()
         html_content = f"""<!DOCTYPE html>
@@ -2640,7 +2653,11 @@ body {{
             base = self._base_url()
             self._send_xml(_wrap_feed("Feed", "", base, f"{base}{clean}", total_results=0, items_per_page=0, start_index=1))
 
-        elif "/yql/weather" in clean or "/v1/yql" in clean or "/dgw" in clean or "yql" in clean:
+        elif "/dgw" in clean:
+            print(f"[DGW GET] path={self.path}")
+            self._handle_stocks_dgw(parsed, b"")
+
+        elif "/yql/weather" in clean or "/v1/yql" in clean or "yql" in clean:
             q = qs.get("q", [""])[0]
             self._handle_weather(q)
 
@@ -2716,8 +2733,9 @@ body {{
                 self.send_error(400, "Empty payload")
                 return
 
+        post_body = b""
         if length:
-            self.rfile.read(length)
+            post_body = self.rfile.read(length)
 
         if "ClientLogin" in clean:
             body = b"SID=DQAAdummy_sid_tuberepair\nLSID=DQAAdummy_lsid_tuberepair\nAuth=DQAAdummy_auth_tuberepair\nYouTubeUser=weiyo\n"
@@ -2735,7 +2753,10 @@ body {{
             self._handle_register_device()
         elif "applelogin" in clean:
             self._handle_applelogin2()
-        elif "/yql/weather" in clean or "/dgw" in clean:
+        elif "/dgw" in clean:
+            print(f"[DGW POST] path={self.path} body={post_body!r}")
+            self._handle_stocks_dgw(parsed, post_body)
+        elif "/yql/weather" in clean:
             self._send_weather_xml(_weather_multi_xml(["2306179"]))
         else:
             print(f"[MISS POST] {clean}")
