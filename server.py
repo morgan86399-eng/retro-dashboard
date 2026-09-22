@@ -4,7 +4,7 @@ import time
 import urllib.request
 import urllib.parse
 from datetime import datetime
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, Response, stream_with_context
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MUSIC_DIR = os.path.join(BASE_DIR, "music")
@@ -79,6 +79,81 @@ def serve_music(filename):
     response = send_from_directory(MUSIC_DIR, filename, conditional=True)
     response.headers["Cache-Control"] = "public, max-age=604800"
     return response
+
+RADIO_STREAMS = {
+    "icrt": {
+        "name": "ICRT FM 100.7",
+        "url": "https://stream.rcs.revma.com/nkdfurztxp3vv",
+        "type": "audio/aac"
+    },
+    "asia": {
+        "name": "亞洲電台 92.7",
+        "url": "https://stream.rcs.revma.com/xpgtqc74hv8uv",
+        "type": "audio/aac"
+    },
+    "lofi": {
+        "name": "24/7 Lofi Chillhop",
+        "url": "https://streams.ilovemusic.de/iloveradio17.mp3",
+        "type": "audio/mpeg"
+    },
+    "fly": {
+        "name": "飛揚調頻 89.5",
+        "url": "https://stream.rcs.revma.com/e0tdah74hv8uv",
+        "type": "audio/aac"
+    },
+    "dance": {
+        "name": "舞曲活力 Hits",
+        "url": "https://streams.ilovemusic.de/iloveradio2.mp3",
+        "type": "audio/mpeg"
+    },
+    "asia-pac": {
+        "name": "亞太電台 92.3",
+        "url": "https://stream.rcs.revma.com/kydend74hv8uv",
+        "type": "audio/aac"
+    }
+}
+
+@app.route("/api/radio/stream")
+def proxy_radio_stream():
+    station_id = request.args.get("id", "icrt")
+    info = RADIO_STREAMS.get(station_id)
+    if not info:
+        return jsonify({"error": "Station not found"}), 404
+
+    target_url = info["url"]
+    content_type = info["type"]
+
+    def generate():
+        req = urllib.request.Request(
+            target_url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Icy-MetaData": "0",
+                "Accept": "*/*"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                while True:
+                    chunk = resp.read(8192)
+                    if not chunk:
+                        break
+                    yield chunk
+        except (GeneratorExit, BrokenPipeError, ConnectionResetError):
+            pass
+        except Exception:
+            pass
+
+    headers = {
+        "Content-Type": content_type,
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+        "Access-Control-Allow-Origin": "*",
+        "X-Accel-Buffering": "no"
+    }
+    return Response(generate(), mimetype=content_type, headers=headers)
+
 
 @app.route("/api/music/list")
 def list_music():
@@ -240,4 +315,4 @@ if __name__ == "__main__":
     print(f"啟動 iPhone 4s 專屬復古儀表板伺服器 (Port: {port})...")
     print(f"本機請連：http://localhost:{port}")
     print(f"iPhone 請連：http://[Mac區域網路IP]:{port}")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)

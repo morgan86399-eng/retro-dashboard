@@ -26,6 +26,7 @@
     dom.btnShuffle = document.getElementById("btn-shuffle");
     dom.btnLoop = document.getElementById("btn-loop");
     dom.progBar = document.getElementById("progress-bar");
+    dom.progKnob = document.getElementById("progress-knob");
     dom.progContainer = document.getElementById("progress-container");
     dom.currTimeElem = document.getElementById("current-time");
     dom.durTimeElem = document.getElementById("duration-time");
@@ -253,6 +254,17 @@
     return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
   }
 
+  function updateProgressBarUI(ratio, timeSec) {
+    if (ratio < 0) ratio = 0;
+    if (ratio > 1) ratio = 1;
+    var pct = (ratio * 100).toFixed(1) + "%";
+    if (dom.progBar) dom.progBar.style.width = pct;
+    if (dom.progKnob) dom.progKnob.style.left = pct;
+    if (dom.currTimeElem && timeSec !== undefined) {
+      dom.currTimeElem.innerHTML = formatTime(timeSec);
+    }
+  }
+
   function loadTrack(idx) {
     if (!playlist || playlist.length === 0) return;
     if (idx < 0) idx = playlist.length - 1;
@@ -267,6 +279,7 @@
       dom.musicTitle.innerHTML = (currentIndex + 1) + ". " + track.title;
     }
     lastUpdateSec = -1;
+    updateProgressBarUI(0, 0);
   }
 
   function playTrack() {
@@ -381,16 +394,21 @@
     }
 
     if (dom.audio) {
-      // Throttled timeupdate: only update DOM when second actually changes
+      // Throttled timeupdate: only update DOM when second actually changes and NOT scrubbing
       dom.audio.addEventListener("timeupdate", function() {
-        if (!dom.audio.duration) return;
+        if (!dom.audio.duration || isDraggingProgress) return;
         var curSec = Math.floor(dom.audio.currentTime);
         if (curSec !== lastUpdateSec) {
           lastUpdateSec = curSec;
-          var pct = (curSec / dom.audio.duration) * 100;
-          if (dom.progBar) dom.progBar.style.width = pct + "%";
-          if (dom.currTimeElem) dom.currTimeElem.innerHTML = formatTime(curSec);
+          var ratio = curSec / dom.audio.duration;
+          updateProgressBarUI(ratio, curSec);
           if (dom.durTimeElem) dom.durTimeElem.innerHTML = formatTime(dom.audio.duration);
+        }
+      }, false);
+
+      dom.audio.addEventListener("durationchange", function() {
+        if (dom.durTimeElem && dom.audio.duration) {
+          dom.durTimeElem.innerHTML = formatTime(dom.audio.duration);
         }
       }, false);
 
@@ -399,15 +417,138 @@
       }, false);
     }
 
+    // Touch & Drag Music Progress Scrubber (iOS 6 Mobile Safari + Desktop)
+    var isDraggingProgress = false;
+
+    function getProgressRatio(e) {
+      if (!dom.progContainer) return -1;
+      var rect = dom.progContainer.getBoundingClientRect();
+      var clientX;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+      } else if (e.clientX !== undefined) {
+        clientX = e.clientX;
+      } else {
+        return -1;
+      }
+      var width = rect.width || (rect.right - rect.left);
+      if (width <= 0) return -1;
+      var offsetX = clientX - rect.left;
+      var ratio = offsetX / width;
+      if (ratio < 0) ratio = 0;
+      if (ratio > 1) ratio = 1;
+      return ratio;
+    }
+
+    function applySeek(ratio) {
+      if (!dom.audio) return;
+      if (!dom.audio.src && playlist.length > 0) {
+        loadTrack(currentIndex || 0);
+      }
+      var duration = dom.audio.duration;
+      if (!duration || isNaN(duration)) {
+        playTrack();
+        return;
+      }
+      var targetSec = ratio * duration;
+      try {
+        dom.audio.currentTime = targetSec;
+      } catch(e) {}
+      lastUpdateSec = Math.floor(targetSec);
+      updateProgressBarUI(ratio, targetSec);
+      if (dom.audio.paused && playlist.length > 0) {
+        playTrack();
+      }
+    }
+
     if (dom.progContainer) {
-      dom.progContainer.onclick = function(e) {
-        if (!dom.audio || !dom.audio.duration) return;
-        var rect = dom.progContainer.getBoundingClientRect();
-        var clickX = e.clientX - rect.left;
-        var width = rect.width;
-        var targetTime = (clickX / width) * dom.audio.duration;
-        dom.audio.currentTime = targetTime;
-      };
+      // Touch events for iPhone 4S
+      dom.progContainer.addEventListener("touchstart", function(e) {
+        if (!dom.audio || !dom.audio.src) {
+          if (playlist.length > 0) {
+            loadTrack(currentIndex || 0);
+            playTrack();
+          }
+          return;
+        }
+        isDraggingProgress = true;
+        if (dom.progContainer.classList) {
+          dom.progContainer.classList.add("touching");
+        }
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0 && dom.audio.duration) {
+          updateProgressBarUI(ratio, ratio * dom.audio.duration);
+        }
+        if (e.preventDefault) e.preventDefault();
+      }, false);
+
+      dom.progContainer.addEventListener("touchmove", function(e) {
+        if (!isDraggingProgress) return;
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0 && dom.audio && dom.audio.duration) {
+          updateProgressBarUI(ratio, ratio * dom.audio.duration);
+        }
+        if (e.preventDefault) e.preventDefault();
+      }, false);
+
+      dom.progContainer.addEventListener("touchend", function(e) {
+        if (!isDraggingProgress) return;
+        isDraggingProgress = false;
+        if (dom.progContainer.classList) {
+          dom.progContainer.classList.remove("touching");
+        }
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0) {
+          applySeek(ratio);
+        }
+        if (e.preventDefault) e.preventDefault();
+      }, false);
+
+      dom.progContainer.addEventListener("touchcancel", function() {
+        isDraggingProgress = false;
+        if (dom.progContainer.classList) {
+          dom.progContainer.classList.remove("touching");
+        }
+      }, false);
+
+      // Desktop Mouse scrubbing fallback
+      var isMouseDown = false;
+      dom.progContainer.addEventListener("mousedown", function(e) {
+        isMouseDown = true;
+        isDraggingProgress = true;
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0 && dom.audio && dom.audio.duration) {
+          updateProgressBarUI(ratio, ratio * dom.audio.duration);
+        }
+      }, false);
+
+      window.addEventListener("mousemove", function(e) {
+        if (!isMouseDown) return;
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0 && dom.audio && dom.audio.duration) {
+          updateProgressBarUI(ratio, ratio * dom.audio.duration);
+        }
+      }, false);
+
+      window.addEventListener("mouseup", function(e) {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        isDraggingProgress = false;
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0) {
+          applySeek(ratio);
+        }
+      }, false);
+
+      // Simple click
+      dom.progContainer.addEventListener("click", function(e) {
+        var ratio = getProgressRatio(e);
+        if (ratio >= 0) {
+          applySeek(ratio);
+        }
+      }, false);
     }
 
     // Load music playlist
@@ -623,12 +764,12 @@
 
   // 7. Live Radio & Lofi Streaming Module (騷操作 3)
   var RADIO_STATIONS = [
-    { id: "icrt", name: "ICRT FM 100.7", genre: "西洋流行 / 英語電台", url: "https://stream.rcs.revma.com/nkdfurztxp3vv" },
-    { id: "asia", name: "亞洲電台 92.7", genre: "熱門華語流行音樂", url: "https://stream.rcs.revma.com/xpgtqc74hv8uv" },
-    { id: "lofi", name: "24/7 Lofi Chillhop", genre: "工作讀書 / 深夜放鬆", url: "https://streams.ilovemusic.de/iloveradio17.mp3" },
-    { id: "fly",  name: "飛揚調頻 89.5", genre: "懷舊金曲 / 時代老歌", url: "https://stream.rcs.revma.com/e0tdah74hv8uv" },
-    { id: "dance",name: "舞曲活力 Hits", genre: "歐美動感電音派對", url: "https://streams.ilovemusic.de/iloveradio2.mp3" },
-    { id: "asia-pac", name: "亞太電台 92.3", genre: "流行生活音樂網", url: "https://stream.rcs.revma.com/kydend74hv8uv" }
+    { id: "icrt", name: "ICRT FM 100.7", genre: "西洋流行 / 英語電台", url: "/api/radio/stream?id=icrt" },
+    { id: "asia", name: "亞洲電台 92.7", genre: "熱門華語流行音樂", url: "/api/radio/stream?id=asia" },
+    { id: "lofi", name: "24/7 Lofi Chillhop", genre: "工作讀書 / 深夜放鬆", url: "/api/radio/stream?id=lofi" },
+    { id: "fly",  name: "飛揚調頻 89.5", genre: "懷舊金曲 / 時代老歌", url: "/api/radio/stream?id=fly" },
+    { id: "dance",name: "舞曲活力 Hits", genre: "歐美動感電音派對", url: "/api/radio/stream?id=dance" },
+    { id: "asia-pac", name: "亞太電台 92.3", genre: "流行生活音樂網", url: "/api/radio/stream?id=asia-pac" }
   ];
 
   var currentRadioIndex = 0;
@@ -656,22 +797,27 @@
     stopGuidance();
 
     var st = RADIO_STATIONS[currentRadioIndex];
-    if (dom.radioPlayer.src !== st.url) {
-      dom.radioPlayer.src = st.url;
-    }
+    var streamUrl = st.url + "&t=" + (new Date().getTime());
+    dom.radioPlayer.src = streamUrl;
 
     if (dom.radioStatus) dom.radioStatus.innerHTML = "連線中... 正在載入即時電台";
-    dom.radioPlayer.play();
-    isRadioPlaying = true;
-
-    if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#10074;&#10074; 暫停廣播";
-    if (dom.radioDot) dom.radioDot.className = "radio-live-dot active";
+    try {
+      dom.radioPlayer.play();
+      isRadioPlaying = true;
+      if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#10074;&#10074; 暫停廣播";
+      if (dom.radioDot) dom.radioDot.className = "radio-live-dot active";
+    } catch(e) {
+      if (dom.radioStatus) dom.radioStatus.innerHTML = "點擊以開始播放";
+    }
   }
 
   function stopRadio() {
     if (!dom.radioPlayer) return;
-    dom.radioPlayer.pause();
-    dom.radioPlayer.src = "";
+    try {
+      dom.radioPlayer.pause();
+      dom.radioPlayer.src = "";
+      dom.radioPlayer.load();
+    } catch(e) {}
     isRadioPlaying = false;
 
     if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#9654; 收聽電台";
@@ -681,11 +827,7 @@
 
   function toggleRadio() {
     if (isRadioPlaying) {
-      dom.radioPlayer.pause();
-      isRadioPlaying = false;
-      if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#9654; 繼續收聽";
-      if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
-      if (dom.radioStatus) dom.radioStatus.innerHTML = "已暫停 &bull; 點擊繼續";
+      stopRadio();
     } else {
       playRadio();
     }
@@ -733,14 +875,15 @@
       }, false);
 
       dom.radioPlayer.addEventListener("error", function() {
-        if (dom.radioStatus) dom.radioStatus.innerHTML = "電台連線忙碌中，請點選其他頻道";
+        if (dom.radioStatus) dom.radioStatus.innerHTML = "電台連線暫時中斷，點擊「重新連線」";
         if (dom.radioDot) dom.radioDot.className = "radio-live-dot";
         try { dom.radioPlayer.pause(); } catch(e) {}
         isRadioPlaying = false;
+        if (dom.btnRadioPlay) dom.btnRadioPlay.innerHTML = "&#9654; 重新連線";
       }, false);
 
       dom.radioPlayer.addEventListener("stalled", function() {
-        if (dom.radioStatus) dom.radioStatus.innerHTML = "訊號緩衝中...";
+        if (dom.radioStatus && isRadioPlaying) dom.radioStatus.innerHTML = "訊號緩衝中...";
       }, false);
     }
 
