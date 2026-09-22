@@ -428,12 +428,13 @@ def route_podcast_feed(fid):
 def route_siri_page():
     return send_from_directory(STATIC_DIR, "siri.html")
 
-@app.route("/api/siri", methods=["POST"])
+@app.route("/api/siri", methods=["POST", "GET"])
 def route_api_siri():
     data = request.get_json(silent=True) or {}
-    query = data.get("query", "").strip()
+    query = data.get("query") or data.get("text") or data.get("q") or request.args.get("q") or request.args.get("text") or ""
+    query = query.strip()
     if not query:
-        return jsonify({"status": "error", "reply": "請問有什麼我可以幫您的？"}), 400
+        return jsonify({"status": "ok", "reply": "您好！請問有什麼我可以為您效勞？"})
     
     import siri_brain
     import stocks_bridge

@@ -7,6 +7,14 @@ import urllib.parse
 from datetime import datetime
 
 BLANKAPI_API_KEY = os.environ.get("BLANKAPI_API_KEY", "")
+if not BLANKAPI_API_KEY:
+    env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if os.path.exists(env_file):
+        with open(env_file, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("BLANKAPI_API_KEY="):
+                    BLANKAPI_API_KEY = line.strip().split("=", 1)[1]
+                    break
 
 def get_siri_response(user_query, weather_cache=None, stocks_fetcher=None):
     q = user_query.strip().lower()
