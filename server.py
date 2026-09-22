@@ -1,6 +1,8 @@
 import os
 import json
 import time
+import threading
+import requests
 import urllib.request
 import urllib.parse
 from datetime import datetime
@@ -79,6 +81,123 @@ def serve_music(filename):
     response = send_from_directory(MUSIC_DIR, filename, conditional=True)
     response.headers["Cache-Control"] = "public, max-age=604800"
     return response
+
+# ============================================================
+# TubeRepair & 懷舊網頁加速傳送門 (整合至同一伺服器)
+# ============================================================
+TUBEREPAIR_PORT = 8767
+
+def ensure_tuberepair_running():
+    try:
+        req = urllib.request.Request(f"http://127.0.0.1:{TUBEREPAIR_PORT}/status")
+        with urllib.request.urlopen(req, timeout=1) as resp:
+            if resp.status == 200:
+                return
+    except Exception:
+        pass
+
+    def _run():
+        try:
+            import tuberepair_proxy
+            tuberepair_proxy.IDLE_TIMEOUT = 999999999
+            server = tuberepair_proxy.ThreadingHTTPServer(("0.0.0.0", TUBEREPAIR_PORT), tuberepair_proxy.Handler)
+            print(f"[TubeRepair] Background service running on 0.0.0.0:{TUBEREPAIR_PORT}")
+            server.serve_forever()
+        except Exception as e:
+            print(f"[TubeRepair] Background service notice: {e}")
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+
+ensure_tuberepair_running()
+
+def forward_to_tuberepair():
+    ensure_tuberepair_running()
+    target_url = f"http://127.0.0.1:{TUBEREPAIR_PORT}{request.full_path}"
+    if target_url.endswith("?"):
+        target_url = target_url[:-1]
+
+    headers = {k: v for k, v in request.headers if k.lower() not in ["content-length", "host"]}
+    headers["Host"] = request.headers.get("Host", "127.0.0.1:8080")
+
+    body = request.get_data() if request.method in ["POST", "PUT"] else None
+
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=target_url,
+            headers=headers,
+            data=body,
+            allow_redirects=False,
+            stream=True,
+            timeout=60
+        )
+
+        excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+        response_headers = [
+            (name, value) for name, value in resp.raw.headers.items()
+            if name.lower() not in excluded_headers
+        ]
+
+        def generate():
+            for chunk in resp.iter_content(chunk_size=8192):
+                if chunk:
+                    yield chunk
+
+        return Response(generate(), status=resp.status_code, headers=response_headers)
+    except Exception as e:
+        return f"TubeRepair Proxy Service Error: {str(e)}", 502
+
+@app.route("/web", strict_slashes=False, methods=["GET", "POST", "HEAD"])
+@app.route("/web/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_web(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/surf", strict_slashes=False, methods=["GET", "POST", "HEAD"])
+@app.route("/surf/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_surf(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/getvideo/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_getvideo(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/getvideo_stream", methods=["GET", "POST", "HEAD"])
+def route_getvideo_stream():
+    return forward_to_tuberepair()
+
+@app.route("/thumb/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_thumb(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/feeds/api/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_feeds(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/schemas/<path:subpath>", methods=["GET", "POST", "HEAD"])
+def route_schemas(subpath=""):
+    return forward_to_tuberepair()
+
+@app.route("/yql/weather", methods=["GET", "POST", "HEAD"])
+@app.route("/v1/yql", methods=["GET", "POST", "HEAD"])
+@app.route("/dgw", methods=["GET", "POST", "HEAD"])
+def route_yql():
+    return forward_to_tuberepair()
+
+@app.route("/ClientLogin", methods=["GET", "POST", "HEAD"])
+def route_clientlogin():
+    return forward_to_tuberepair()
+
+@app.route("/pepconfig.plist", methods=["GET", "POST", "HEAD"])
+def route_pepconfig():
+    return forward_to_tuberepair()
+
+@app.route("/raw_proxy_code", methods=["GET"])
+@app.route("/raw_ytdlp", methods=["GET"])
+@app.route("/install_macmini.sh", methods=["GET"])
+def route_raw():
+    return forward_to_tuberepair()
+
 
 RADIO_STREAMS = {
     "icrt": {
@@ -312,7 +431,11 @@ def handle_messages():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    print(f"啟動 iPhone 4s 專屬復古儀表板伺服器 (Port: {port})...")
-    print(f"本機請連：http://localhost:{port}")
-    print(f"iPhone 請連：http://[Mac區域網路IP]:{port}")
+    ensure_tuberepair_running()
+    print("=" * 60)
+    print(f"🚀 iPhone 4s 全功能整合伺服器 (Port: {port} & {TUBEREPAIR_PORT}) 啟動！")
+    print(f"  📱 智慧儀表板：http://localhost:{port}/ 或 http://192.168.0.185:{port}/")
+    print(f"  🌐 網頁傳送門：http://localhost:{port}/web 或 http://192.168.0.185:{port}/web")
+    print(f"  📺 懷舊YouTube：http://localhost:{port}/web/youtube 或 8767 埠直連")
+    print("=" * 60)
     app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
