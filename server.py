@@ -578,6 +578,17 @@ def photos_upload():
         "message": f"成功上傳 {len(uploaded_files)} 張照片至 {target_label}！"
     })
 
+@app.route("/api/photos/sync_auto", methods=["POST"])
+def photos_sync_auto():
+    import sync_iphone_photos
+    import importlib
+    importlib.reload(sync_iphone_photos)
+    try:
+        res = sync_iphone_photos.sync_all()
+        return jsonify(res)
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route("/api/photos/list")
 def photos_list():
     mounted, active_dir = ensure_smb_mounted()

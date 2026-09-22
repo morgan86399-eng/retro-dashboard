@@ -359,16 +359,28 @@
       <div class="card-body">
         <input type="file" id="file-input" accept="image/*,video/*" multiple style="display:none;">
 
+        <!-- 一鍵全自動同步按鈕 -->
+        <button id="btn-autosync" class="btn-action" style="background: -webkit-linear-gradient(top, #f59e0b, #d97706); border-color: #b45309; margin-bottom: 6px;" type="button">
+          &#9889; 一鍵全自動備份所有相簿照片
+        </button>
+        <div style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 12px;">
+          (透過 Wi-Fi 密鑰直讀相機膠卷，完全不需手動挑選)
+        </div>
+
+        <div style="text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+          ── 或手動挑選指定照片 ──
+        </div>
+
         <!-- 選擇照片按鈕 -->
         <button id="btn-choose" class="btn-action btn-pick" type="button">
-          &#128247; 選擇相簿照片 / 拍照
+          &#128247; 手動選取相簿照片 / 拍照
         </button>
 
         <div id="selection-status">尚未選取任何照片</div>
 
         <!-- 開始上傳按鈕 -->
         <button id="btn-upload" class="btn-action btn-upload" type="button" disabled>
-          &#11014; 上傳至 192.168.0.115 (disk1s2)
+          &#11014; 上傳所選照片至 disk1s2
         </button>
 
         <!-- 進度條 -->
@@ -404,6 +416,7 @@
     var fileInput = document.getElementById("file-input");
     var btnChoose = document.getElementById("btn-choose");
     var btnUpload = document.getElementById("btn-upload");
+    var btnAutoSync = document.getElementById("btn-autosync");
     var selectionStatus = document.getElementById("selection-status");
     var progressWrap = document.getElementById("progress-wrap");
     var progressBar = document.getElementById("progress-bar");
@@ -415,6 +428,41 @@
     var photoCount = document.getElementById("photo-count");
     var galleryCount = document.getElementById("gallery-count");
     var galleryContainer = document.getElementById("gallery-container");
+
+    // 一鍵全自動無線同步
+    btnAutoSync.onclick = function() {
+      btnAutoSync.disabled = true;
+      btnAutoSync.innerText = "⏳ 正在全自動備份相簿中...";
+      showMessage("正在自 iPhone 4s 相機膠卷自動拉取新照片至 disk1s2...", "success");
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/photos/sync_auto", true);
+      xhr.onload = function() {
+        btnAutoSync.disabled = false;
+        btnAutoSync.innerHTML = "&#9889; 一鍵全自動備份所有相簿照片";
+        if (xhr.status === 200) {
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res.success) {
+              showMessage("✅ 全自動同步完成！新下載: " + res.synced + " 張，略過已存在: " + res.skipped + " 張", "success");
+              loadStatus();
+              loadGallery();
+            } else {
+              showMessage("同步失敗: " + (res.error || "未知錯誤"), "error");
+            }
+          } catch(e) {
+            showMessage("伺服器解析異常", "error");
+          }
+        } else {
+          showMessage("伺服器錯誤: " + xhr.status, "error");
+        }
+      };
+      xhr.onerror = function() {
+        btnAutoSync.disabled = false;
+        btnAutoSync.innerHTML = "&#9889; 一鍵全自動備份所有相簿照片";
+        showMessage("網路連線異常", "error");
+      };
+      xhr.send();
+    };
 
     // 點擊選取照片
     btnChoose.onclick = function() {
