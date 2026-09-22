@@ -1,12 +1,16 @@
 import os
 import json
 import time
+import shutil
+import subprocess
 import threading
 import requests
 import urllib.request
 import urllib.parse
 from datetime import datetime
-from flask import Flask, jsonify, request, send_from_directory, Response, stream_with_context
+from PIL import Image
+from werkzeug.utils import secure_filename
+from flask import Flask, jsonify, request, send_from_directory, Response, stream_with_context, abort
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MUSIC_DIR = os.path.join(BASE_DIR, "music")
@@ -449,6 +453,186 @@ def handle_messages():
         except Exception:
             messages = []
     return jsonify(messages)
+
+# ============================================================
+# iPhone 4s 無線相片上傳至 192.168.0.115 (disk1s2) 橋樑
+# ============================================================
+SMB_TARGET_HOST = "192.168.0.115"
+SMB_SHARE_NAME = "disk1s2"
+SMB_MOUNT_POINT = "/Volumes/disk1s2"
+PHOTO_DEST_DIR = os.path.join(SMB_MOUNT_POINT, "iPhone4s_Photos")
+LOCAL_FALLBACK_DIR = os.path.join(BASE_DIR, "uploaded_photos")
+
+def ensure_smb_mounted():
+    """確保 192.168.0.115/disk1s2 網路磁碟已掛載，若未掛載則自動以系統鑰匙圈無感重連"""
+    if os.path.ismount(SMB_MOUNT_POINT) or os.path.exists(SMB_MOUNT_POINT):
+        try:
+            os.makedirs(PHOTO_DEST_DIR, exist_ok=True)
+            return True, PHOTO_DEST_DIR
+        except Exception:
+            pass
+
+    try:
+        cmd = ["osascript", "-e", f'mount volume "smb://user@{SMB_TARGET_HOST}/{SMB_SHARE_NAME}"']
+        subprocess.run(cmd, capture_output=True, text=True, timeout=8)
+        if os.path.exists(SMB_MOUNT_POINT):
+            os.makedirs(PHOTO_DEST_DIR, exist_ok=True)
+            return True, PHOTO_DEST_DIR
+    except Exception as e:
+        print(f"[SMB MOUNT ERR] {e}")
+
+    os.makedirs(LOCAL_FALLBACK_DIR, exist_ok=True)
+    return False, LOCAL_FALLBACK_DIR
+
+@app.route("/photos")
+@app.route("/upload")
+def photos_page():
+    return send_from_directory(STATIC_DIR, "photos.html")
+
+@app.route("/api/photos/status")
+def photos_status():
+    mounted, active_dir = ensure_smb_mounted()
+    free_gb = 0.0
+    total_photos = 0
+    try:
+        usage = shutil.disk_usage(active_dir)
+        free_gb = round(usage.free / (1024 ** 3), 2)
+    except Exception:
+        pass
+
+    try:
+        valid_exts = (".jpg", ".jpeg", ".png", ".gif", ".mov", ".mp4", ".heic")
+        files = [f for f in os.listdir(active_dir) if f.lower().endswith(valid_exts)]
+        total_photos = len(files)
+    except Exception:
+        pass
+
+    return jsonify({
+        "mounted": mounted,
+        "target_host": SMB_TARGET_HOST,
+        "share_name": SMB_SHARE_NAME,
+        "dest_dir": active_dir,
+        "free_gb": free_gb,
+        "total_photos": total_photos
+    })
+
+@app.route("/api/photos/upload", methods=["POST"])
+def photos_upload():
+    mounted, active_dir = ensure_smb_mounted()
+    thumbs_dir = os.path.join(active_dir, ".thumbs")
+    try:
+        os.makedirs(thumbs_dir, exist_ok=True)
+    except Exception:
+        pass
+
+    uploaded_files = []
+    file_objs = []
+    for key in ("photos", "file", "files", "image", "images"):
+        file_objs.extend(request.files.getlist(key))
+    if not file_objs and request.files:
+        for k in request.files:
+            file_objs.extend(request.files.getlist(k))
+
+    if not file_objs:
+        return jsonify({"error": "未收到任何照片檔案"}), 400
+
+    now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    for idx, f in enumerate(file_objs):
+        if not f or not f.filename:
+            continue
+        orig_name = secure_filename(f.filename) or f"photo_{idx}.jpg"
+        clean_name = f"IMG_{now_str}_{idx+1:02d}_{orig_name}"
+        save_path = os.path.join(active_dir, clean_name)
+
+        try:
+            f.save(save_path)
+            size_kb = round(os.path.getsize(save_path) / 1024, 1)
+
+            # Generate thumbnail for fast gallery view on iPhone 4s
+            thumb_path = os.path.join(thumbs_dir, clean_name)
+            try:
+                if clean_name.lower().endswith((".jpg", ".jpeg", ".png", ".gif")):
+                    with Image.open(save_path) as im:
+                        if im.mode in ("RGBA", "P", "LA"):
+                            im = im.convert("RGB")
+                        im.thumbnail((200, 200))
+                        im.save(thumb_path, "JPEG", quality=80)
+            except Exception as te:
+                print(f"[THUMB ERR] {te}")
+
+            uploaded_files.append({
+                "name": clean_name,
+                "size_kb": size_kb,
+                "url": f"/api/photos/file/{urllib.parse.quote(clean_name)}",
+                "thumb_url": f"/api/photos/thumb/{urllib.parse.quote(clean_name)}"
+            })
+        except Exception as e:
+            print(f"[SAVE ERR] {e}")
+
+    target_label = f"192.168.0.115 ({SMB_SHARE_NAME})" if mounted else "本機暫存 (待連線)"
+    return jsonify({
+        "success": True,
+        "count": len(uploaded_files),
+        "files": uploaded_files,
+        "mounted": mounted,
+        "message": f"成功上傳 {len(uploaded_files)} 張照片至 {target_label}！"
+    })
+
+@app.route("/api/photos/list")
+def photos_list():
+    mounted, active_dir = ensure_smb_mounted()
+    valid_exts = (".jpg", ".jpeg", ".png", ".gif", ".mov", ".mp4", ".heic")
+
+    results = []
+    try:
+        entries = []
+        for name in os.listdir(active_dir):
+            if name.startswith(".") or not name.lower().endswith(valid_exts):
+                continue
+            full_path = os.path.join(active_dir, name)
+            if os.path.isfile(full_path):
+                entries.append((os.path.getmtime(full_path), name, os.path.getsize(full_path)))
+
+        entries.sort(key=lambda x: x[0], reverse=True)
+        for mtime, name, size in entries[:60]:
+            results.append({
+                "name": name,
+                "size_kb": round(size / 1024, 1),
+                "time": datetime.fromtimestamp(mtime).strftime("%m/%d %H:%M"),
+                "url": f"/api/photos/file/{urllib.parse.quote(name)}",
+                "thumb_url": f"/api/photos/thumb/{urllib.parse.quote(name)}"
+            })
+    except Exception as e:
+        print(f"[LIST ERR] {e}")
+
+    return jsonify({"photos": results, "mounted": mounted, "dest_dir": active_dir})
+
+@app.route("/api/photos/file/<path:filename>")
+def photos_get_file(filename):
+    mounted, active_dir = ensure_smb_mounted()
+    return send_from_directory(active_dir, filename)
+
+@app.route("/api/photos/thumb/<path:filename>")
+def photos_get_thumb(filename):
+    mounted, active_dir = ensure_smb_mounted()
+    thumbs_dir = os.path.join(active_dir, ".thumbs")
+    thumb_path = os.path.join(thumbs_dir, filename)
+    if os.path.exists(thumb_path):
+        return send_from_directory(thumbs_dir, filename)
+
+    orig_path = os.path.join(active_dir, filename)
+    if os.path.exists(orig_path):
+        try:
+            os.makedirs(thumbs_dir, exist_ok=True)
+            with Image.open(orig_path) as im:
+                if im.mode in ("RGBA", "P", "LA"):
+                    im = im.convert("RGB")
+                im.thumbnail((200, 200))
+                im.save(thumb_path, "JPEG", quality=80)
+            return send_from_directory(thumbs_dir, filename)
+        except Exception:
+            return send_from_directory(active_dir, filename)
+    abort(404)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))

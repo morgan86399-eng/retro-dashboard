@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>iPhone 4s 無線相簿上傳</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="相片上傳">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <link rel="apple-touch-icon-precomposed" href="/static/apple-touch-icon.png">
+  <style>
+    /* iOS 6 Classic Skeuomorphic Design */
+    * {
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    body {
+      background: #c5ccd4 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIElEQVQIW2NkQAOMQGBmZmb8z8DAwMTAwMDEwAAVwCYBAAz9Ag1uFqR/AAAAAElFTkSuQmCC') repeat;
+      font-family: -apple-system, "Helvetica Neue", Helvetica, "PingFang TC", "Heiti TC", sans-serif;
+      color: #333;
+      padding-bottom: 30px;
+    }
+    /* iOS 6 Navigation Bar */
+    .navbar {
+      height: 44px;
+      background: -webkit-linear-gradient(top, #b0bccd 0%, #889bb3 50%, #8195af 51%, #6d84a2 100%);
+      background: linear-gradient(to bottom, #b0bccd 0%, #889bb3 50%, #8195af 51%, #6d84a2 100%);
+      border-bottom: 1px solid #2d3642;
+      -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      padding: 0 8px;
+    }
+    .nav-title {
+      color: #fff;
+      font-size: 17px;
+      font-weight: bold;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.6);
+      text-align: center;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+    }
+    .nav-btn {
+      display: inline-block;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.6);
+      background: -webkit-linear-gradient(top, #7d90a8 0%, #4b6385 50%, #3e567a 51%, #3b5275 100%);
+      background: linear-gradient(to bottom, #7d90a8 0%, #4b6385 50%, #3e567a 51%, #3b5275 100%);
+      border: 1px solid #243346;
+      -webkit-border-radius: 4px;
+      border-radius: 4px;
+      -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 1px rgba(0,0,0,0.25);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 1px rgba(0,0,0,0.25);
+    }
+    .nav-btn:active {
+      background: #2b3b52;
+    }
+
+    /* Content Area */
+    .content {
+      padding: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* iOS 6 Inset Grouped Table / Cards */
+    .card {
+      background: #fff;
+      -webkit-border-radius: 8px;
+      border-radius: 8px;
+      border: 1px solid #a5b0be;
+      -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: -webkit-linear-gradient(top, #f9f9f9 0%, #ececec 100%);
+      background: linear-gradient(to bottom, #f9f9f9 0%, #ececec 100%);
+      padding: 10px 14px;
+      border-bottom: 1px solid #d5d5d5;
+      font-size: 14px;
+      font-weight: bold;
+      color: #4c566c;
+      text-shadow: 0 1px 0 #fff;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+    .card-body {
+      padding: 14px;
+    }
+
+    /* Status row */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      -webkit-border-radius: 10px;
+      border-radius: 10px;
+      color: #fff;
+    }
+    .status-badge.online {
+      background: -webkit-linear-gradient(top, #4ade80, #16a34a);
+      background: linear-gradient(to bottom, #4ade80, #16a34a);
+      border: 1px solid #15803d;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+    }
+    .status-badge.offline {
+      background: -webkit-linear-gradient(top, #f87171, #dc2626);
+      background: linear-gradient(to bottom, #f87171, #dc2626);
+      border: 1px solid #b91c1c;
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+    }
+    .info-row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #555;
+    }
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+    .info-val {
+      font-weight: bold;
+      color: #222;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    /* Big Action Buttons */
+    .btn-action {
+      display: block;
+      width: 100%;
+      height: 44px;
+      line-height: 42px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #1e3a8a;
+      -webkit-border-radius: 6px;
+      border-radius: 6px;
+      background: -webkit-linear-gradient(top, #3b82f6 0%, #2563eb 50%, #1d4ed8 51%, #1e40af 100%);
+      background: linear-gradient(to bottom, #3b82f6 0%, #2563eb 50%, #1d4ed8 51%, #1e40af 100%);
+      -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 3px rgba(0,0,0,0.3);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 3px rgba(0,0,0,0.3);
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-action:active {
+      background: #1e3a8a;
+    }
+    .btn-pick {
+      background: -webkit-linear-gradient(top, #ffffff 0%, #f1f5f9 50%, #e2e8f0 51%, #cbd5e1 100%);
+      background: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 50%, #e2e8f0 51%, #cbd5e1 100%);
+      color: #1e293b;
+      border: 1px solid #94a3b8;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .btn-pick:active {
+      background: #cbd5e1;
+    }
+    .btn-upload {
+      background: -webkit-linear-gradient(top, #22c55e 0%, #16a34a 50%, #15803d 51%, #166534 100%);
+      background: linear-gradient(to bottom, #22c55e 0%, #16a34a 50%, #15803d 51%, #166534 100%);
+      border: 1px solid #14532d;
+    }
+    .btn-upload:active {
+      background: #14532d;
+    }
+    .btn-upload:disabled {
+      background: #9ca3af;
+      border-color: #6b7280;
+      color: #e5e7eb;
+      cursor: not-allowed;
+    }
+
+    /* Selected files preview count */
+    #selection-status {
+      font-size: 13px;
+      color: #475569;
+      text-align: center;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      display: none;
+      margin-top: 12px;
+      background: #e2e8f0;
+      -webkit-border-radius: 8px;
+      border-radius: 8px;
+      padding: 3px;
+      border: 1px solid #cbd5e1;
+      -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .progress-bar {
+      height: 18px;
+      width: 0%;
+      -webkit-border-radius: 6px;
+      border-radius: 6px;
+      background: -webkit-linear-gradient(top, #38bdf8 0%, #0284c7 50%, #0369a1 51%, #075985 100%);
+      background: linear-gradient(to bottom, #38bdf8 0%, #0284c7 50%, #0369a1 51%, #075985 100%);
+      -webkit-transition: width 0.2s ease;
+      transition: width 0.2s ease;
+    }
+    #progress-text {
+      text-align: center;
+      font-size: 12px;
+      color: #0369a1;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    /* Message banner */
+    #msg-banner {
+      display: none;
+      padding: 10px;
+      margin-top: 10px;
+      -webkit-border-radius: 6px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      text-align: center;
+    }
+    #msg-banner.success {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+    #msg-banner.error {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Thumbnail Gallery */
+    .gallery-grid {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      margin: -3px;
+    }
+    .gallery-item {
+      width: 33.333%;
+      padding: 3px;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    .gallery-thumb {
+      width: 100%;
+      height: 85px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid #d1d5db;
+      -webkit-border-radius: 4px;
+      border-radius: 4px;
+      background: #e5e7eb;
+    }
+    .gallery-name {
+      font-size: 10px;
+      color: #64748b;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .empty-tip {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <div class="navbar">
+    <a href="/" class="nav-btn">&#9664; 儀表板</a>
+    <div class="nav-title">&#128247; 相片上傳橋樑</div>
+    <a href="/photos" class="nav-btn">&#128260; 重新整理</a>
+  </div>
+
+  <div class="content">
+
+    <!-- 目標主機狀態卡片 -->
+    <div class="card">
+      <div class="card-header">
+        <span>網路磁碟狀態</span>
+        <span id="target-badge" class="status-badge offline">檢測中...</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span>目標主機：</span>
+          <span class="info-val">192.168.0.115 (Mac mini)</span>
+        </div>
+        <div class="info-row">
+          <span>網路共享 (SMB)：</span>
+          <span id="share-name" class="info-val">disk1s2</span>
+        </div>
+        <div class="info-row">
+          <span>可用剩餘容量：</span>
+          <span id="free-space" class="info-val">-- GB</span>
+        </div>
+        <div class="info-row">
+          <span>已備份相片數：</span>
+          <span id="photo-count" class="info-val">-- 張</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 上傳操作卡片 -->
+    <div class="card">
+      <div class="card-header">
+        <span>無線相片上傳</span>
+        <span style="font-size: 11px; color: #64748b;">iOS 6 原生支援</span>
+      </div>
+      <div class="card-body">
+        <input type="file" id="file-input" accept="image/*,video/*" multiple style="display:none;">
+
+        <!-- 選擇照片按鈕 -->
+        <button id="btn-choose" class="btn-action btn-pick" type="button">
+          &#128247; 選擇相簿照片 / 拍照
+        </button>
+
+        <div id="selection-status">尚未選取任何照片</div>
+
+        <!-- 開始上傳按鈕 -->
+        <button id="btn-upload" class="btn-action btn-upload" type="button" disabled>
+          &#11014; 上傳至 192.168.0.115 (disk1s2)
+        </button>
+
+        <!-- 進度條 -->
+        <div id="progress-wrap" class="progress-wrap">
+          <div id="progress-bar" class="progress-bar"></div>
+          <div id="progress-text">0% (0 / 0)</div>
+        </div>
+
+        <!-- 狀態訊息 -->
+        <div id="msg-banner"></div>
+      </div>
+    </div>
+
+    <!-- 已上傳照片藝廊卡片 -->
+    <div class="card">
+      <div class="card-header">
+        <span>disk1s2 上的相片庫</span>
+        <span id="gallery-count" style="font-size: 11px; color: #64748b;">載入中...</span>
+      </div>
+      <div class="card-body">
+        <div id="gallery-container" class="gallery-grid">
+          <div class="empty-tip">正在讀取磁碟照片...</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 嚴格相容 iOS 6 Mobile Safari (純 ES5 語法，無 const/let/arrow functions)
+    var selectedFiles = [];
+
+    var fileInput = document.getElementById("file-input");
+    var btnChoose = document.getElementById("btn-choose");
+    var btnUpload = document.getElementById("btn-upload");
+    var selectionStatus = document.getElementById("selection-status");
+    var progressWrap = document.getElementById("progress-wrap");
+    var progressBar = document.getElementById("progress-bar");
+    var progressText = document.getElementById("progress-text");
+    var msgBanner = document.getElementById("msg-banner");
+    var targetBadge = document.getElementById("target-badge");
+    var shareName = document.getElementById("share-name");
+    var freeSpace = document.getElementById("free-space");
+    var photoCount = document.getElementById("photo-count");
+    var galleryCount = document.getElementById("gallery-count");
+    var galleryContainer = document.getElementById("gallery-container");
+
+    // 點擊選取照片
+    btnChoose.onclick = function() {
+      fileInput.click();
+    };
+
+    // 檔案選取變更
+    fileInput.onchange = function() {
+      if (fileInput.files && fileInput.files.length > 0) {
+        selectedFiles = fileInput.files;
+        selectionStatus.innerHTML = "已選取 <strong>" + selectedFiles.length + "</strong> 張照片/影片";
+        selectionStatus.style.color = "#16a34a";
+        btnUpload.disabled = false;
+        hideMessage();
+      } else {
+        selectedFiles = [];
+        selectionStatus.innerHTML = "尚未選取任何照片";
+        selectionStatus.style.color = "#475569";
+        btnUpload.disabled = true;
+      }
+    };
+
+    // 點擊開始上傳
+    btnUpload.onclick = function() {
+      if (!selectedFiles || selectedFiles.length === 0) {
+        showMessage("請先點選「選擇相簿照片」按鈕！", "error");
+        return;
+      }
+
+      var formData = new FormData();
+      for (var i = 0; i < selectedFiles.length; i++) {
+        formData.append("photos", selectedFiles[i]);
+      }
+
+      btnUpload.disabled = true;
+      btnChoose.disabled = true;
+      progressWrap.style.display = "block";
+      progressBar.style.width = "0%";
+      progressText.innerText = "準備上傳中...";
+      hideMessage();
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/photos/upload", true);
+
+      // 上傳進度回報
+      xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+          var percent = Math.round((e.loaded / e.total) * 100);
+          progressBar.style.width = percent + "%";
+          var loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+          var totalMB = (e.total / (1024 * 1024)).toFixed(1);
+          progressText.innerText = percent + "% (" + loadedMB + " MB / " + totalMB + " MB)";
+        }
+      };
+
+      xhr.onload = function() {
+        btnUpload.disabled = false;
+        btnChoose.disabled = false;
+        if (xhr.status === 200) {
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res.success) {
+              progressBar.style.width = "100%";
+              progressText.innerText = "上傳完成 100%！";
+              showMessage(res.message || ("成功上傳 " + res.count + " 張照片！"), "success");
+              fileInput.value = "";
+              selectedFiles = [];
+              selectionStatus.innerHTML = "上傳完畢！可繼續選取新照片";
+              selectionStatus.style.color = "#16a34a";
+              btnUpload.disabled = true;
+              loadStatus();
+              loadGallery();
+            } else {
+              showMessage(res.error || "上傳失敗，請重試", "error");
+            }
+          } catch(err) {
+            showMessage("伺服器回應異常: " + err, "error");
+          }
+        } else {
+          showMessage("HTTP 錯誤碼: " + xhr.status, "error");
+        }
+      };
+
+      xhr.onerror = function() {
+        btnUpload.disabled = false;
+        btnChoose.disabled = false;
+        showMessage("網路連線中斷，請確認 Wi-Fi 連線！", "error");
+      };
+
+      xhr.send(formData);
+    };
+
+    function showMessage(text, type) {
+      msgBanner.innerText = text;
+      msgBanner.className = type;
+      msgBanner.style.display = "block";
+    }
+
+    function hideMessage() {
+      msgBanner.style.display = "none";
+    }
+
+    // 載入磁碟狀態
+    function loadStatus() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/api/photos/status", true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            if (data.mounted) {
+              targetBadge.className = "status-badge online";
+              targetBadge.innerText = "🟢 disk1s2 已連線";
+            } else {
+              targetBadge.className = "status-badge offline";
+              targetBadge.innerText = "🟡 本機暫存 (待連線)";
+            }
+            shareName.innerText = data.share_name || "disk1s2";
+            freeSpace.innerText = (data.free_gb || 0) + " GB";
+            photoCount.innerText = (data.total_photos || 0) + " 張";
+          } catch(e) {}
+        }
+      };
+      xhr.send();
+    }
+
+    // 載入照片藝廊
+    function loadGallery() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/api/photos/list", true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            var photos = data.photos || [];
+            galleryCount.innerText = "共 " + photos.length + " 張";
+
+            if (photos.length === 0) {
+              galleryContainer.innerHTML = '<div class="empty-tip">目前尚無照片，請點上方選取照片上傳！</div>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < photos.length; i++) {
+              var p = photos[i];
+              html += '<div class="gallery-item">';
+              html += '  <a href="' + p.url + '" target="_blank">';
+              html += '    <img class="gallery-thumb" src="' + p.thumb_url + '" alt="' + p.name + '">';
+              html += '  </a>';
+              html += '  <div class="gallery-name">' + p.time + '</div>';
+              html += '</div>';
+            }
+            galleryContainer.innerHTML = html;
+          } catch(e) {
+            galleryContainer.innerHTML = '<div class="empty-tip">照片資料解析異常</div>';
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    // 初始化載入
+    loadStatus();
+    loadGallery();
+  </script>
+</body>
+</html>
