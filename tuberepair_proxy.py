@@ -59,6 +59,78 @@ WOEID_STORE = {
     "0000": ("桃園市", 24.99368, 121.29696, "台灣", "TWN"),
 }
 
+TAIWAN_CITIES = {
+    "桃園": ("桃園市", 24.99368, 121.29696, "台灣", "TWN", "2306188"),
+    "桃園市": ("桃園市", 24.99368, 121.29696, "台灣", "TWN", "2306188"),
+    "桃園區": ("桃園區, 桃園市", 24.99368, 121.29696, "台灣", "TWN", "2306188"),
+    "中壢": ("中壢區, 桃園市", 24.96535, 121.22485, "台灣", "TWN", "28751581"),
+    "中壢區": ("中壢區, 桃園市", 24.96535, 121.22485, "台灣", "TWN", "28751581"),
+    "平鎮": ("平鎮區, 桃園市", 24.94582, 121.21852, "台灣", "TWN", "28751582"),
+    "八德": ("八德區, 桃園市", 24.92881, 121.28424, "台灣", "TWN", "28751583"),
+    "楊梅": ("楊梅區, 桃園市", 24.90806, 121.14583, "台灣", "TWN", "28751584"),
+    "蘆竹": ("蘆竹區, 桃園市", 25.04583, 121.28722, "台灣", "TWN", "28751585"),
+    "大溪": ("大溪區, 桃園市", 24.88389, 121.28972, "台灣", "TWN", "28751586"),
+    "龜山": ("龜山區, 桃園市", 24.99333, 121.34111, "台灣", "TWN", "28751587"),
+    "龍潭": ("龍潭區, 桃園市", 24.86389, 121.21639, "台灣", "TWN", "28751588"),
+    "大園": ("大園區, 桃園市", 25.06389, 121.19778, "台灣", "TWN", "28751589"),
+    "觀音": ("觀音區, 桃園市", 25.03583, 121.08278, "台灣", "TWN", "28751590"),
+    "新屋": ("新屋區, 桃園市", 24.97222, 121.10556, "台灣", "TWN", "28751591"),
+    "復興": ("復興區, 桃園市", 24.82194, 121.35278, "台灣", "TWN", "28751592"),
+    "台北": ("台北市", 25.05306, 121.52639, "台灣", "TWN", "2306179"),
+    "台北市": ("台北市", 25.05306, 121.52639, "台灣", "TWN", "2306179"),
+    "新北": ("新北市", 25.01167, 121.46583, "台灣", "TWN", "20070569"),
+    "新北市": ("新北市", 25.01167, 121.46583, "台灣", "TWN", "20070569"),
+    "板橋": ("板橋區, 新北市", 25.01167, 121.46583, "台灣", "TWN", "20070569"),
+    "新竹": ("新竹市", 24.80361, 120.96861, "台灣", "TWN", "2306185"),
+    "新竹市": ("新竹市", 24.80361, 120.96861, "台灣", "TWN", "2306185"),
+    "台中": ("台中市", 24.1469, 120.6839, "台灣", "TWN", "2306176"),
+    "台中市": ("台中市", 24.1469, 120.6839, "台灣", "TWN", "2306176"),
+    "台南": ("台南市", 22.99083, 120.21333, "台灣", "TWN", "2306182"),
+    "台南市": ("台南市", 22.99083, 120.21333, "台灣", "TWN", "2306182"),
+    "高雄": ("高雄市", 22.62728, 120.30144, "台灣", "TWN", "2306180"),
+    "高雄市": ("高雄市", 22.62728, 120.30144, "台灣", "TWN", "2306180"),
+    "基隆": ("基隆市", 25.12833, 121.74194, "台灣", "TWN", "2306181"),
+    "宜蘭": ("宜蘭市", 24.75778, 121.75333, "台灣", "TWN", "2306199"),
+    "花蓮": ("花蓮市", 23.97694, 121.60444, "台灣", "TWN", "2306190"),
+    "台東": ("台東市", 22.75833, 121.14444, "台灣", "TWN", "2306195"),
+    "苗栗": ("苗栗市", 24.56028, 120.82139, "台灣", "TWN", "2306192"),
+    "彰化": ("彰化市", 24.08167, 120.53833, "台灣", "TWN", "2306183"),
+    "南投": ("南投市", 23.90972, 120.68472, "台灣", "TWN", "2306204"),
+    "雲林": ("斗六市, 雲林縣", 23.70944, 120.54389, "台灣", "TWN", "2306208"),
+    "嘉義": ("嘉義市", 23.47889, 120.44972, "台灣", "TWN", "2296315"),
+    "屏東": ("屏東市", 22.67139, 120.48861, "台灣", "TWN", "2306198"),
+    "澎湖": ("馬公市, 澎湖縣", 23.56583, 119.56639, "台灣", "TWN", "2306200"),
+    "金門": ("金城鎮, 金門縣", 24.43667, 118.31861, "台灣", "TWN", "28760735"),
+    "馬祖": ("南竿鄉, 連江縣", 26.15583, 119.93972, "台灣", "TWN", "28760734"),
+}
+
+CHINESE_TO_EN_MAP = {
+    "桃園": "Taoyuan",
+    "台北": "Taipei",
+    "新北": "New Taipei",
+    "台中": "Taichung",
+    "台南": "Tainan",
+    "高雄": "Kaohsiung",
+    "新竹": "Hsinchu",
+    "基隆": "Keelung",
+    "嘉義": "Chiayi",
+    "彰化": "Changhua",
+    "苗栗": "Miaoli",
+    "南投": "Nantou",
+    "雲林": "Yunlin",
+    "屏東": "Pingtung",
+    "宜蘭": "Yilan",
+    "花蓮": "Hualien",
+    "台東": "Taitung",
+    "澎湖": "Penghu",
+    "金門": "Kinmen",
+    "連江": "Lienchiang",
+    "馬祖": "Matsu",
+}
+
+for _k, _v in TAIWAN_CITIES.items():
+    WOEID_STORE[str(_v[5])] = (_v[0], _v[1], _v[2], _v[3], _v[4])
+
 
 def _cached(key, fn, ttl=CACHE_TTL):
     import time
@@ -284,26 +356,53 @@ def _wmo_to_yahoo(wmo_code, is_day=1):
 
 
 def _weather_search_xml(q_text):
-    try:
-        url = f"https://geocoding-api.open-meteo.com/v1/search?name={quote(q_text)}&count=6&language=zh&format=json"
-        res = requests.get(url, timeout=6).json()
-        items = res.get("results", [])
-    except Exception as e:
-        print(f"[weather geocode err] {e}")
-        items = []
-
+    clean_q = unquote(q_text).strip().replace("台灣", "").replace("臺灣", "")
     loc_xml = []
-    for item in items:
-        name = item.get("name", q_text)
-        admin = item.get("admin1", "")
-        country = item.get("country", "")
-        cc = item.get("country_code", "TW").upper()
-        lat = item.get("latitude")
-        lon = item.get("longitude")
-        woeid = str(abs(hash((name, lat, lon))) % 9000000 + 1000000)
-        display_name = f"{name}, {admin}" if admin and admin != name else name
-        WOEID_STORE[woeid] = (display_name, lat, lon, country, cc)
-        loc_xml.append(f'<location city="{_esc(display_name)}" country="{_esc(country)}" countryAbbr="{_esc(cc)}" locationID="TWXX0021|{woeid}" woeid="{woeid}"/>')
+    seen_woeid = set()
+
+    # 1. Match in Taiwan local cities
+    for k, v in TAIWAN_CITIES.items():
+        if k in clean_q or clean_q in k:
+            display_name, lat, lon, country, cc, woeid = v
+            if woeid not in seen_woeid:
+                seen_woeid.add(woeid)
+                WOEID_STORE[str(woeid)] = (display_name, lat, lon, country, cc)
+                loc_xml.append(f'<location city="{_esc(display_name)}" country="{_esc(country)}" countryAbbr="{_esc(cc)}" locationID="TWXX0021|{woeid}" woeid="{woeid}"/>')
+
+    # 2. If not enough results, fallback to Open-Meteo Geocoding API with Chinese & English terms
+    if len(loc_xml) < 3:
+        search_terms = [clean_q]
+        en_term = CHINESE_TO_EN_MAP.get(clean_q)
+        if not en_term:
+            for ck, ev in CHINESE_TO_EN_MAP.items():
+                if ck in clean_q:
+                    en_term = ev
+                    break
+        if en_term and en_term not in search_terms:
+            search_terms.append(en_term)
+
+        for term in search_terms:
+            try:
+                url = f"https://geocoding-api.open-meteo.com/v1/search?name={quote(term)}&count=6&language=zh&format=json"
+                res = requests.get(url, timeout=5).json()
+                items = res.get("results", [])
+                for item in items:
+                    name = item.get("name", q_text)
+                    admin = item.get("admin1", "")
+                    country = item.get("country", "")
+                    cc = item.get("country_code", "TW").upper()
+                    lat = item.get("latitude")
+                    lon = item.get("longitude")
+                    woeid = str(abs(hash((name, lat, lon))) % 9000000 + 1000000)
+                    if woeid not in seen_woeid:
+                        seen_woeid.add(woeid)
+                        display_name = f"{name}, {admin}" if admin and admin != name else name
+                        WOEID_STORE[str(woeid)] = (display_name, lat, lon, country, cc)
+                        loc_xml.append(f'<location city="{_esc(display_name)}" country="{_esc(country)}" countryAbbr="{_esc(cc)}" locationID="TWXX0021|{woeid}" woeid="{woeid}"/>')
+                if loc_xml:
+                    break
+            except Exception as e:
+                print(f"[weather geocode err] {e}")
 
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <query xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" yahoo:count="{len(loc_xml)}" yahoo:created="{datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}" yahoo:lang="zh-TW">
