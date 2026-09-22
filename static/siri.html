@@ -9,25 +9,39 @@
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); }
     body {
-      background: #111417 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIElEQVQIW2NkQAOMQGBkQAcwGqEAXAAMg4MhAMUDAE4qAQkS+w1VAAAAAElFTkSuQmCC') repeat;
+      background: #111417;
       margin: 0;
       padding: 0;
       font-family: -apple-system, "Heiti TC", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      height: 100%;
       overflow: hidden;
       color: #fff;
+    }
+    html, body { height: 100%; }
+
+    #app {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      height: 100%;
     }
 
     .top-header {
       background: rgba(18, 22, 28, 0.95);
       border-bottom: 1px solid #232a35;
       padding: 10px 14px;
+      display: -webkit-box;
+      display: -webkit-flex;
       display: flex;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
       justify-content: space-between;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
       align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
       z-index: 10;
     }
     .top-header h1 {
@@ -44,56 +58,65 @@
       font-weight: bold;
       border: 1px solid #334155;
       padding: 4px 8px;
+      -webkit-border-radius: 6px;
       border-radius: 6px;
       background: #1e293b;
     }
 
     .chat-container {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
       flex: 1;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
     .bubble {
       max-width: 85%;
       padding: 10px 14px;
+      -webkit-border-radius: 14px;
       border-radius: 14px;
       font-size: 14px;
       line-height: 1.4;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      position: relative;
+      margin-bottom: 12px;
+      word-wrap: break-word;
     }
     .bubble.user {
-      align-self: flex-end;
+      margin-left: auto;
+      background: -webkit-linear-gradient(#3b82f6, #1d4ed8);
       background: linear-gradient(#3b82f6, #1d4ed8);
       color: #fff;
       border: 1px solid #2563eb;
+      -webkit-border-bottom-right-radius: 2px;
       border-bottom-right-radius: 2px;
     }
     .bubble.siri {
-      align-self: flex-start;
+      margin-right: auto;
+      background: -webkit-linear-gradient(#f8fafc, #f1f5f9);
       background: linear-gradient(#f8fafc, #f1f5f9);
       color: #0f172a;
       border: 1px solid #e2e8f0;
+      -webkit-border-bottom-left-radius: 2px;
       border-bottom-left-radius: 2px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
     }
 
-    /* Cards */
     .siri-card {
       margin-top: 8px;
+      -webkit-border-radius: 10px;
       border-radius: 10px;
       padding: 10px;
       font-size: 12px;
     }
     .card-weather {
+      background: -webkit-linear-gradient(135deg, #0284c7, #0369a1);
       background: linear-gradient(135deg, #0284c7, #0369a1);
       color: #fff;
+      display: -webkit-box;
       display: flex;
+      -webkit-box-pack: justify;
       justify-content: space-between;
+      -webkit-box-align: center;
       align-items: center;
     }
     .weather-temp { font-size: 24px; font-weight: bold; }
@@ -104,69 +127,36 @@
     }
     .stock-price { font-size: 20px; font-weight: bold; color: #10b981; }
 
-    /* Bottom Siri Orb & Input Bar */
     .bottom-bar {
+      background: -webkit-linear-gradient(top, #1a202c, #0f172a);
       background: linear-gradient(to bottom, #1a202c, #0f172a);
       border-top: 1px solid #334155;
       padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
+      text-align: center;
     }
 
     .mic-button {
       width: 64px;
       height: 64px;
+      -webkit-border-radius: 50%;
       border-radius: 50%;
+      background: -webkit-radial-gradient(circle at 35% 35%, #a855f7, #6b21a8, #3b0764);
       background: radial-gradient(circle at 35% 35%, #a855f7, #6b21a8, #3b0764);
       border: 2px solid #c084fc;
-      box-shadow: 0 0 15px rgba(168, 85, 247, 0.6), inset 0 2px 4px rgba(255,255,255,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-block;
       font-size: 26px;
       cursor: pointer;
       color: #fff;
       margin-bottom: 8px;
-      transition: all 0.2s;
-    }
-    .mic-button:active, .mic-button.listening {
-      transform: scale(0.95);
-      box-shadow: 0 0 25px rgba(192, 132, 252, 0.9), inset 0 0 8px #fff;
-      border-color: #f3e8ff;
-    }
-
-    .input-row {
-      display: flex;
-      width: 100%;
-      gap: 8px;
-    }
-    .text-input {
-      flex: 1;
-      background: #0f172a;
-      border: 1px solid #475569;
-      border-radius: 18px;
-      padding: 8px 14px;
-      color: #fff;
-      font-size: 13px;
-      outline: none;
-    }
-    .btn-send {
-      background: linear-gradient(#9333ea, #7e22ce);
-      border: 1px solid #6b21a8;
-      color: #fff;
-      border-radius: 16px;
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
+      line-height: 60px;
+      text-align: center;
     }
 
     .suggestions {
+      display: -webkit-box;
       display: flex;
-      gap: 6px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       width: 100%;
       padding-bottom: 6px;
       margin-bottom: 4px;
@@ -176,91 +166,93 @@
       color: #cbd5e1;
       font-size: 11px;
       padding: 4px 10px;
+      -webkit-border-radius: 12px;
       border-radius: 12px;
       white-space: nowrap;
+      cursor: pointer;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .input-row {
+      display: -webkit-box;
+      display: flex;
+      width: 100%;
+    }
+    .text-input {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #475569;
+      -webkit-border-radius: 18px;
+      border-radius: 18px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      margin-right: 8px;
+    }
+    .btn-send {
+      background: -webkit-linear-gradient(#9333ea, #7e22ce);
+      background: linear-gradient(#9333ea, #7e22ce);
+      border: 1px solid #6b21a8;
+      color: #fff;
+      -webkit-border-radius: 16px;
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: bold;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div class="top-header">
-    <a href="/" class="back-btn">← 儀表板</a>
-    <h1>Siri 智慧大腦 (iOS 6)</h1>
-    <a href="/store" class="back-btn">市集</a>
-  </div>
+  <div id="app">
+    <div class="top-header">
+      <a href="/" class="back-btn">&larr; 儀表板</a>
+      <h1>Siri 智慧大腦</h1>
+      <a href="/store" class="back-btn">市集</a>
+    </div>
 
-  <div class="chat-container" id="chat">
-    <div class="bubble siri">
-      我有什麼可以為您效勞？
+    <div class="chat-container" id="chat">
+      <div class="bubble siri">
+        我有什麼可以為您效勞？
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="suggestions">
+        <div class="pill" onclick="sendQuery('今天桃園天氣如何？')">☀ 桃園天氣</div>
+        <div class="pill" onclick="sendQuery('台積電股票行情')">📈 台積電</div>
+        <div class="pill" onclick="sendQuery('講個笑話給我聽')">😄 笑話</div>
+        <div class="pill" onclick="sendQuery('現在幾點了？')">⏰ 時間</div>
+      </div>
+
+      <div class="mic-button" id="micBtn" onclick="toggleMic()">
+        🎙
+      </div>
+
+      <div class="input-row">
+        <input type="text" id="queryInput" class="text-input" placeholder="輸入問題..." onkeydown="if(event.keyCode===13) handleSend()">
+        <button class="btn-send" onclick="handleSend()">傳送</button>
+      </div>
     </div>
   </div>
-
-  <div class="bottom-bar">
-    <div class="suggestions">
-      <div class="pill" onclick="sendQuery('今天桃園天氣如何？')">☀️ 桃園天氣</div>
-      <div class="pill" onclick="sendQuery('台積電股票行情')">📈 台積電股價</div>
-      <div class="pill" onclick="sendQuery('講個笑話給我聽')">😄 講笑話</div>
-      <div class="pill" onclick="sendQuery('史蒂夫賈伯斯是誰？')">🍏 史蒂夫賈伯斯</div>
-      <div class="pill" onclick="sendQuery('現在幾點了？')">⏰ 現在時間</div>
-    </div>
-
-    <div class="mic-button" id="micBtn" onclick="toggleMic()">
-      🎙️
-    </div>
-
-    <div class="input-row">
-      <input type="text" id="queryInput" class="text-input" placeholder="對 Siri 說話或輸入問題..." onkeydown="if(event.keyCode===13) handleSend()">
-      <button class="btn-send" onclick="handleSend()">傳送</button>
-    </div>
-  </div>
-
-  <audio id="siriAudio" style="display:none;"></audio>
 
   <script>
-    var isListening = false;
-    var recognition = null;
-    var audioEl = document.getElementById('siriAudio');
-
-    // Web Speech API
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'zh-TW';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.onresult = function(event) {
-        var text = event.results[0][0].transcript;
-        document.getElementById('queryInput').value = text;
-        sendQuery(text);
-      };
-      recognition.onend = function() {
-        isListening = false;
-        document.getElementById('micBtn').classList.remove('listening');
-      };
-    }
+    /* iOS 6 compatible - NO fetch(), NO arrow functions, NO let/const */
+    var chatEl = document.getElementById('chat');
 
     function toggleMic() {
-      if (!recognition) {
-        // Fallback prompt
-        var q = prompt("請輸入您想對 Siri 說的話：");
-        if (q) sendQuery(q);
-        return;
-      }
-      if (!isListening) {
-        recognition.start();
-        isListening = true;
-        document.getElementById('micBtn').classList.add('listening');
-      } else {
-        recognition.stop();
-        isListening = false;
-        document.getElementById('micBtn').classList.remove('listening');
-      }
+      var q = prompt("請輸入您想對 Siri 說的話：");
+      if (q) sendQuery(q);
     }
 
     function handleSend() {
       var input = document.getElementById('queryInput');
-      var q = input.value.trim();
+      var q = input.value.replace(/^\s+|\s+$/g, '');
       if (!q) return;
       input.value = '';
       sendQuery(q);
@@ -268,63 +260,63 @@
 
     function sendQuery(text) {
       appendBubble('user', text);
-      var chat = document.getElementById('chat');
-      var loadingBubble = appendBubble('siri', '正在思考中...');
+      var loadingEl = appendBubble('siri', '正在思考中...');
 
-      fetch('/api/siri', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text })
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        loadingBubble.innerHTML = data.reply || '抱歉，我目前無法回答這個問題。';
-        
-        // Render Card if available
-        if (data.card_type === 'weather' && data.card_data) {
-          var card = document.createElement('div');
-          card.className = 'siri-card card-weather';
-          card.innerHTML = 
-            '<div><b>' + (data.card_data.city || '桃園市') + '</b><br>' + (data.card_data.condition || '') + '</div>' +
-            '<div class="weather-temp">' + (data.card_data.temp || '') + '</div>';
-          loadingBubble.appendChild(card);
-        } else if (data.card_type === 'stock' && data.card_data) {
-          var card = document.createElement('div');
-          card.className = 'siri-card card-stock';
-          card.innerHTML = 
-            '<div><b>' + (data.card_data.name || '') + ' (' + (data.card_data.symbol || '') + ')</b></div>' +
-            '<div class="stock-price">' + (data.card_data.price || '') + ' <span style="font-size:12px;">' + (data.card_data.change || '') + '</span></div>';
-          loadingBubble.appendChild(card);
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/siri', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.timeout = 30000;
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            loadingEl.innerHTML = data.reply || '抱歉，我目前無法回答這個問題。';
+
+            if (data.card_type === 'weather' && data.card_data) {
+              var card = document.createElement('div');
+              card.className = 'siri-card card-weather';
+              card.innerHTML =
+                '<div><b>' + (data.card_data.city || '桃園市') + '</b><br>' + (data.card_data.condition || '') + '</div>' +
+                '<div class="weather-temp">' + (data.card_data.temp || '') + '</div>';
+              loadingEl.appendChild(card);
+            } else if (data.card_type === 'stock' && data.card_data) {
+              var card = document.createElement('div');
+              card.className = 'siri-card card-stock';
+              card.innerHTML =
+                '<div><b>' + (data.card_data.name || '') + ' (' + (data.card_data.symbol || '') + ')</b></div>' +
+                '<div class="stock-price">' + (data.card_data.price || '') + ' <span style="font-size:12px;">' + (data.card_data.change || '') + '</span></div>';
+              loadingEl.appendChild(card);
+            }
+
+            chatEl.scrollTop = chatEl.scrollHeight;
+          } catch (e) {
+            loadingEl.innerHTML = '抱歉，回應解析錯誤。';
+          }
+        } else {
+          loadingEl.innerHTML = '抱歉，Siri 暫時無法連線 (' + xhr.status + ')';
         }
+      };
 
-        chat.scrollTop = chat.scrollHeight;
+      xhr.ontimeout = function() {
+        loadingEl.innerHTML = '抱歉，回應超時，請再試一次。';
+      };
 
-        // Play Siri Voice
-        if (data.reply) {
-          playSiriVoice(data.reply);
-        }
-      })
-      .catch(function(err) {
-        loadingBubble.innerHTML = '抱歉，連線到 Siri 思考大腦時發生錯誤。';
-      });
+      xhr.onerror = function() {
+        loadingEl.innerHTML = '抱歉，連線到 Siri 時發生網路錯誤。';
+      };
+
+      xhr.send(JSON.stringify({ query: text }));
     }
 
     function appendBubble(role, html) {
-      var chat = document.getElementById('chat');
       var b = document.createElement('div');
       b.className = 'bubble ' + role;
       b.innerHTML = html;
-      chat.appendChild(b);
-      chat.scrollTop = chat.scrollHeight;
+      chatEl.appendChild(b);
+      chatEl.scrollTop = chatEl.scrollHeight;
       return b;
-    }
-
-    function playSiriVoice(text) {
-      var clean = text.replace(/<[^>]*>/g, '').substring(0, 100);
-      audioEl.src = '/api/tts?text=' + encodeURIComponent(clean);
-      audioEl.play().catch(function(e) {
-        console.log("Audio autoplay prevented, user click required", e);
-      });
     }
   </script>
 
