@@ -113,9 +113,17 @@ ensure_tuberepair_running()
 
 def forward_to_tuberepair():
     ensure_tuberepair_running()
-    target_url = f"http://127.0.0.1:{TUBEREPAIR_PORT}{request.full_path}"
-    if target_url.endswith("?"):
-        target_url = target_url[:-1]
+    path = request.path
+    qs = request.environ.get("QUERY_STRING", "")
+    if qs:
+        try:
+            fixed_qs = qs.encode("latin-1").decode("utf-8")
+        except Exception:
+            fixed_qs = qs
+        quoted_qs = urllib.parse.quote(fixed_qs, safe="=&?/%+~:@")
+        target_url = f"http://127.0.0.1:{TUBEREPAIR_PORT}{path}?{quoted_qs}"
+    else:
+        target_url = f"http://127.0.0.1:{TUBEREPAIR_PORT}{path}"
 
     headers = {k: v for k, v in request.headers if k.lower() not in ["content-length", "host"]}
     headers["Host"] = request.headers.get("Host", "127.0.0.1:8080")
@@ -133,18 +141,18 @@ def forward_to_tuberepair():
             timeout=60
         )
 
-        excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+        excluded_headers = ["content-encoding", "transfer-encoding", "connection"]
         response_headers = [
             (name, value) for name, value in resp.raw.headers.items()
             if name.lower() not in excluded_headers
         ]
 
         def generate():
-            for chunk in resp.iter_content(chunk_size=8192):
+            for chunk in resp.iter_content(chunk_size=64 * 1024):
                 if chunk:
                     yield chunk
 
-        return Response(generate(), status=resp.status_code, headers=response_headers)
+        return Response(generate(), status=resp.status_code, headers=response_headers, direct_passthrough=True)
     except Exception as e:
         return f"TubeRepair Proxy Service Error: {str(e)}", 502
 
@@ -188,6 +196,12 @@ def route_yql():
 def route_clientlogin():
     return forward_to_tuberepair()
 
+@app.route("/applelogin1", methods=["GET", "POST", "HEAD"])
+@app.route("/applelogin2", methods=["GET", "POST", "HEAD"])
+@app.route("/registerDevice", methods=["GET", "POST", "HEAD"])
+def route_applelogin():
+    return forward_to_tuberepair()
+
 @app.route("/pepconfig.plist", methods=["GET", "POST", "HEAD"])
 def route_pepconfig():
     return forward_to_tuberepair()
@@ -197,6 +211,13 @@ def route_pepconfig():
 @app.route("/install_macmini.sh", methods=["GET"])
 def route_raw():
     return forward_to_tuberepair()
+
+@app.errorhandler(404)
+def fallback_tuberepair(e):
+    p = request.path
+    if p.startswith(("/feeds", "/getvideo", "/thumb", "/schemas", "/api", "/web", "/surf", "/v1", "/yql")) or "ClientLogin" in p or "applelogin" in p or "registerDevice" in p:
+        return forward_to_tuberepair()
+    return e
 
 
 RADIO_STREAMS = {

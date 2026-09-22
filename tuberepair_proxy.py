@@ -2438,7 +2438,11 @@ body {{
 
     def do_GET(self):
         touch_active()
-        parsed = urlparse(self.path)
+        try:
+            raw_path = self.path.encode("iso-8859-1").decode("utf-8")
+        except Exception:
+            raw_path = self.path
+        parsed = urlparse(raw_path)
         qs = parse_qs(parsed.query)
         clean = re.sub(r"/+", "/", parsed.path)
 
@@ -2515,8 +2519,21 @@ body {{
         elif clean == "/web/dcard":
             self._send_dcard_hub(qs)
 
-        elif clean == "/schemas/2007/categories.cat" in clean:
+        elif "/schemas/2007/categories.cat" in clean:
             self._handle_categories()
+
+        elif "applelogin1" in clean:
+            self._handle_applelogin1()
+
+        elif "applelogin2" in clean or "applelogin" in clean:
+            self._handle_applelogin2()
+
+        elif "registerDevice" in clean:
+            self._handle_register_device()
+
+        elif clean.startswith("/feeds/"):
+            base = self._base_url()
+            self._send_xml(_wrap_feed("Feed", "", base, f"{base}{clean}", total_results=0, items_per_page=0, start_index=1))
 
         elif "/yql/weather" in clean or "/v1/yql" in clean or "/dgw" in clean or "yql" in clean:
             q = qs.get("q", [""])[0]
