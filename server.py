@@ -245,6 +245,18 @@ RETRO_APPS = {
         "bundle_id": "com.donutgames.castlesmasher",
         "version": "1.0",
         "ipa": "castlesmasher.ipa"
+    },
+    "gba4ios": {
+        "title": "GBA4iOS (Game Boy Advance 掌機)",
+        "bundle_id": "com.rileytestut.enterprise.GBA4iOS.Original",
+        "version": "1.6.2",
+        "ipa": "gba4ios.ipa"
+    },
+    "podcasts": {
+        "title": "Apple Podcasts (經典雙盤磁帶錄音機)",
+        "bundle_id": "com.apple.podcasts",
+        "version": "1.2.3",
+        "ipa": "podcasts.ipa"
     }
 }
 
@@ -292,6 +304,160 @@ def route_manifest(appid):
 def serve_ipa(filename):
     ipa_dir = os.path.join(BASE_DIR, "ipa")
     return send_from_directory(ipa_dir, filename, conditional=True)
+
+@app.route("/api/upload_rom", methods=["POST"])
+def route_upload_rom():
+    if "file" not in request.files:
+        return jsonify({"status": "error", "message": "沒有選擇任何檔案"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"status": "error", "message": "檔案名稱不得為空"}), 400
+    
+    filename = secure_filename(file.filename)
+    ext = os.path.splitext(filename)[1].lower()
+    if ext not in [".gba", ".gbc", ".gb", ".zip", ".nes"]:
+        return jsonify({"status": "error", "message": f"不支援的副檔名: {ext}，僅支援 .gba, .gbc, .zip, .nes"}), 400
+    
+    roms_dir = os.path.join(BASE_DIR, "roms")
+    os.makedirs(roms_dir, exist_ok=True)
+    local_path = os.path.join(roms_dir, filename)
+    file.save(local_path)
+    
+    # Push to iPhone 4s WebDAV / Media / Documents
+    iphone_uploaded = False
+    try:
+        with open(local_path, "rb") as rf:
+            rom_data = rf.read()
+        dav_url = f"http://192.168.0.104/Media/ROMs/{urllib.parse.quote(filename)}"
+        dav_req = urllib.request.Request(dav_url, data=rom_data, method="PUT")
+        dav_req.add_header("Expect", "")
+        with urllib.request.urlopen(dav_req, timeout=5) as dav_resp:
+            if dav_resp.status in (200, 201, 204):
+                iphone_uploaded = True
+    except Exception as e:
+        print(f"WebDAV upload to iPhone 4s failed: {e}")
+        
+    return jsonify({
+        "status": "ok",
+        "filename": filename,
+        "iphone_synced": iphone_uploaded,
+        "message": f"ROM [{filename}] 上傳成功！{'已即時無線注入 iPhone 4s，打開 GBA4iOS 即可開玩！' if iphone_uploaded else '已保存在伺服器！'}"
+    })
+
+@app.route("/roms/<path:filename>")
+def serve_rom(filename):
+    roms_dir = os.path.join(BASE_DIR, "roms")
+    return send_from_directory(roms_dir, filename, conditional=True)
+
+PODCAST_FEEDS = {
+    "gooaye": {
+        "title": "Gooaye 股癌",
+        "author": "謝孟恭",
+        "desc": "台灣最熱門財經與科技投資幽默隨筆",
+        "url": "https://feeds.soundon.fm/podcasts/954689a5-3096-43a4-a80b-7810b219cef3.xml",
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/04/b5/eb/04b5ebdf-7072-21fc-5876-e5feb5ba3dac/mza_7653733142335128691.jpeg/600x600bb.jpg"
+    },
+    "bailingguo": {
+        "title": "百靈果 News",
+        "author": "Kylie & Ken",
+        "desc": "華語最自由的國際新聞與時事雙語脫口秀",
+        "url": "https://feed.firstory.me/rss/user/cmjaz594i0000hdvpdpnd4fw8",
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/42/e6/9b/42e69b29-8267-28a0-89d1-6a8a27d2c42e/mza_17512456390832780230.jpg/600x600bb.jpg"
+    },
+    "mindi": {
+        "title": "敏迪選讀",
+        "author": "敏迪",
+        "desc": "把國際大事寫成輕鬆好懂的早安新聞與深度訪談",
+        "url": "https://feeds.soundon.fm/podcasts/44833083-490d-4f97-a782-fd5e34c0abef.xml",
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts114/v4/2a/59/46/2a5946cc-7521-0dc4-5b03-9f0c46b81eef/mza_4964299199116822710.jpg/600x600bb.jpg"
+    },
+    "commute": {
+        "title": "台灣通勤第一品牌",
+        "author": "李毅誠 & 柯呈舫",
+        "desc": "下班通勤放鬆必備的真性情對話與生活哲學",
+        "url": "https://anchor.fm/s/1ea77470/podcast/rss",
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts123/v4/02/4c/58/024c58d2-5b90-84a2-4861-f052b147e1d6/mza_3950128602506399095.jpg/600x600bb.jpg"
+    },
+    "bbc": {
+        "title": "BBC 6 Minute English",
+        "author": "BBC Learning English",
+        "desc": "標準英式發音與熱門時事英語精華聽力訓練",
+        "url": "https://podcasts.files.bbci.co.uk/p02pc9tn.rss",
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/ba/98/35/ba9835eb-1ef3-60e4-bf05-3d141b8d1c7a/mza_3844641997714022659.jpg/600x600bb.jpg"
+    }
+}
+
+@app.route("/podcasts")
+def route_podcasts_page():
+    return send_from_directory(STATIC_DIR, "podcasts.html")
+
+@app.route("/api/podcasts")
+def route_api_podcasts():
+    host = request.host
+    items = []
+    for fid, p in PODCAST_FEEDS.items():
+        feed_url = f"http://{host}/podcast/feed/{fid}.xml"
+        pcast_url = f"pcast://{host}/podcast/feed/{fid}.xml"
+        items.append({
+            "id": fid,
+            "title": p["title"],
+            "author": p["author"],
+            "desc": p["desc"],
+            "cover": p["cover"],
+            "feed_url": feed_url,
+            "pcast_url": pcast_url
+        })
+    return jsonify(items)
+
+@app.route("/podcast/feed/<fid>")
+@app.route("/podcast/feed/<fid>.xml")
+def route_podcast_feed(fid):
+    p = PODCAST_FEEDS.get(fid.replace(".xml", ""))
+    if not p:
+        abort(404)
+    upstream_url = p["url"]
+    try:
+        req = urllib.request.Request(upstream_url, headers={"User-Agent": "iTunes/10.6 (Macintosh; Intel Mac OS X 10.6.8)"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            content = resp.read()
+            return Response(content, mimetype="application/rss+xml; charset=utf-8")
+    except Exception as e:
+        return f"Error fetching podcast feed: {e}", 502
+
+@app.route("/siri")
+def route_siri_page():
+    return send_from_directory(STATIC_DIR, "siri.html")
+
+@app.route("/api/siri", methods=["POST"])
+def route_api_siri():
+    data = request.get_json(silent=True) or {}
+    query = data.get("query", "").strip()
+    if not query:
+        return jsonify({"status": "error", "reply": "請問有什麼我可以幫您的？"}), 400
+    
+    import siri_brain
+    import stocks_bridge
+    res = siri_brain.get_siri_response(
+        query,
+        weather_cache=cache.get("weather"),
+        stocks_fetcher=stocks_bridge.fetch_quotes_batch
+    )
+    return jsonify(res)
+
+@app.route("/api/tts")
+def route_api_tts():
+    text = request.args.get("text", "").strip()
+    if not text:
+        abort(400)
+    q = urllib.parse.quote(text[:100])
+    tts_url = f"https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-TW&client=tw-ob&q={q}"
+    try:
+        req = urllib.request.Request(tts_url, headers={"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1_3 like Mac OS X)"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            audio_data = resp.read()
+            return Response(audio_data, mimetype="audio/mpeg")
+    except Exception as e:
+        return f"TTS Error: {e}", 500
 
 @app.route("/ClientLogin", methods=["GET", "POST", "HEAD"])
 def route_clientlogin():

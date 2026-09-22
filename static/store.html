@@ -208,6 +208,65 @@
         安裝
       </a>
     </div>
+
+    <div class="game-item">
+      <div class="game-icon" style="background: #4338ca;">👾</div>
+      <div class="game-info">
+        <div class="game-name">GBA4iOS 1.6 (Game Boy Advance 掌機)</div>
+        <div class="game-desc">為 3.5" Retina 視網膜量身打造的掌機模擬器，已內建 Anguna 勇者傳奇！</div>
+      </div>
+      <a href="itms-services://?action=download-manifest&url=http://192.168.0.185:8080/manifest/gba4ios.plist" class="btn-install">
+        安裝
+      </a>
+    </div>
+
+    <div class="game-item">
+      <div class="game-icon" style="background: #854d0e;">📻</div>
+      <div class="game-info">
+        <div class="game-name">Apple Podcasts (經典雙捲軸磁帶播客)</div>
+        <div class="game-desc">喬布斯時代最高擬物傑作，播放時磁帶轉動，支援手指拖盤快轉！</div>
+      </div>
+      <a href="itms-services://?action=download-manifest&url=http://192.168.0.185:8080/manifest/podcasts.plist" class="btn-install">
+        安裝
+      </a>
+    </div>
+  </div>
+
+  <!-- 復古掌機 ROM 無線投送箱 -->
+  <div class="section-card">
+    <div class="section-title">
+      <span>🕹️ 復古掌機 ROM 無線投送箱</span>
+      <span class="tag" style="background: #8b5cf6;">即時 Wi-Fi 注入</span>
+    </div>
+    <p style="font-size: 12px; color: #475569; margin: 4px 0 10px;">
+      將下載好的 <code>.gba</code>、<code>.gbc</code> 或 <code>.zip</code> 遊戲 ROM 檔案上傳，系統將自動透過 Wi-Fi 投送至 iPhone 4s 的遊戲庫中！
+    </p>
+    <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center;">
+      <input type="file" id="romFileInput" accept=".gba,.gbc,.gb,.zip,.nes" style="font-size: 12px; margin-bottom: 10px; max-width: 100%;">
+      <br>
+      <button id="btnUploadRom" onclick="uploadRomFile()" class="btn-install" style="background: linear-gradient(#8b5cf6, #6d28d9); border-color: #5b21b6; padding: 8px 16px; font-size: 13px; cursor: pointer;">
+        🚀 一鍵無線投送至 iPhone 4s
+      </button>
+      <div id="romUploadStatus" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></div>
+    </div>
+  </div>
+
+  <!-- Mac Finder 無線網路隨身碟 -->
+  <div class="section-card">
+    <div class="section-title">
+      <span>🖥️ Mac Finder 無線網路硬碟 (WebDAV)</span>
+      <span class="tag" style="background: #0ea5e9;">常駐 Bonjour</span>
+    </div>
+    <p style="font-size: 12px; color: #334155; line-height: 1.5; margin: 4px 0 8px;">
+      iPhone 4s 已常駐開啟 WebDAV 檔案伺服器與 Bonjour 廣播。您可以在 Mac 上免接傳輸線直接拖曳照片、音樂與遊戲：
+    </p>
+    <div style="background: #0f172a; color: #38bdf8; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 12px; margin-bottom: 8px;">
+      Mac Finder 快捷鍵: <b>Cmd + K</b><br>
+      輸入伺服器位址: <b>http://192.168.0.104</b>
+    </div>
+    <div style="font-size: 11px; color: #64748b;">
+      💡 在 Mac「訪達 (Finder)」側邊欄「網路」中，也會直接出現 <b>iPhone 4s 無線硬碟</b>！
+    </div>
   </div>
 
   <!-- 系統核心狀態與功能一覽 -->
@@ -217,6 +276,9 @@
       <span class="tag" style="background: #059669;">全部在線</span>
     </div>
     <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: #334155; line-height: 1.6;">
+      <li><b>🖥️ Finder 無線硬碟</b>：WebDAV + Bonjour 廣播（<code>http://192.168.0.104</code> 免線拖拉）</li>
+      <li><b>👆 全螢幕上滑手勢</b>：Activator 注入（底部上滑回主螢幕、左右滑切換多工）</li>
+      <li><b>👾 掌機遊戲模擬器</b>：GBA4iOS 1.6 視網膜精準像素 + 網頁 ROM 投送箱</li>
       <li><b>🔊 AirPlay Hi-Fi 音響</b>：已廣播為 <code>iPhone 4s Hi-Fi 音響</code>（鎖屏背景常駐）</li>
       <li><b>📈 原生股市 App</b>：YGoiPhoneClient / DGW 協定即時轉譯、走勢折線圖支援</li>
       <li><b>☀️ 原生天氣 App</b>：Open-Meteo 桃園市精準氣象、24 小時預報注入</li>
@@ -227,8 +289,58 @@
     </ul>
   </div>
 
+  <script>
+    function uploadRomFile() {
+      var fileInput = document.getElementById("romFileInput");
+      var statusDiv = document.getElementById("romUploadStatus");
+      var btn = document.getElementById("btnUploadRom");
+      if (!fileInput.files || fileInput.files.length === 0) {
+        statusDiv.style.color = "#dc2626";
+        statusDiv.innerText = "請先選擇 .gba 或 .zip 遊戲檔案！";
+        return;
+      }
+      var file = fileInput.files[0];
+      var formData = new FormData();
+      formData.append("file", file);
+      
+      btn.disabled = true;
+      btn.innerText = "正在投送中...";
+      statusDiv.style.color = "#2563eb";
+      statusDiv.innerText = "正在傳送 " + file.name + " 至 iPhone 4s...";
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload_rom", true);
+      xhr.onload = function() {
+        btn.disabled = false;
+        btn.innerText = "🚀 一鍵無線投送至 iPhone 4s";
+        try {
+          var res = JSON.parse(xhr.responseText);
+          if (xhr.status === 200 && res.status === "ok") {
+            statusDiv.style.color = "#059669";
+            statusDiv.innerText = "✅ " + res.message;
+            fileInput.value = "";
+          } else {
+            statusDiv.style.color = "#dc2626";
+            statusDiv.innerText = "❌ 投送失敗: " + (res.message || "伺服器錯誤");
+          }
+        } catch(e) {
+          statusDiv.style.color = "#dc2626";
+          statusDiv.innerText = "❌ 伺服器回應異常";
+        }
+      };
+      xhr.onerror = function() {
+        btn.disabled = false;
+        btn.innerText = "🚀 一鍵無線投送至 iPhone 4s";
+        statusDiv.style.color = "#dc2626";
+        statusDiv.innerText = "❌ 網路連線錯誤";
+      };
+      xhr.send(formData);
+    }
+  </script>
+
   <div class="nav-links">
     <a href="/">← 返回智慧儀表板</a>
+    <a href="/podcasts">📻 磁帶播客電台</a>
     <a href="/photos">📸 無線相簿同步</a>
     <a href="/web">🌐 網頁傳送門</a>
   </div>
