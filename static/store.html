@@ -232,23 +232,40 @@
     </div>
   </div>
 
-  <!-- 復古掌機 ROM 無線投送箱 -->
+  <!-- 復古遊戲 ROM 無線投送箱 -->
   <div class="section-card">
     <div class="section-title">
-      <span>🕹️ 復古掌機 ROM 無線投送箱</span>
-      <span class="tag" style="background: #8b5cf6;">即時 Wi-Fi 注入</span>
+      <span>🕹️ 復古遊戲 ROM 無線投送箱</span>
+      <span class="tag" style="background: #8b5cf6;">GBA / 超任 / 紅白機</span>
     </div>
     <p style="font-size: 12px; color: #475569; margin: 4px 0 10px;">
-      將下載好的 <code>.gba</code>、<code>.gbc</code> 或 <code>.zip</code> 遊戲 ROM 檔案上傳，系統將自動透過 Wi-Fi 投送至 iPhone 4s 的遊戲庫中！
+      將下載好的 <code>.gba</code>、<code>.smc</code>、<code>.sfc</code>、<code>.gbc</code> 或 <code>.zip</code> 遊戲 ROM 上傳，系統自動透過 Wi-Fi 注入 iPhone 4s，打開 <b>GBA4iOS</b> 或 <b>Snes9x EX</b> 即可暢玩！
     </p>
     <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center;">
-      <input type="file" id="romFileInput" accept=".gba,.gbc,.gb,.zip,.nes" style="font-size: 12px; margin-bottom: 10px; max-width: 100%;">
+      <input type="file" id="romFileInput" accept=".gba,.gbc,.gb,.zip,.nes,.smc,.sfc" style="font-size: 12px; margin-bottom: 10px; max-width: 100%;">
       <br>
       <button id="btnUploadRom" onclick="uploadRomFile()" class="btn-install" style="background: linear-gradient(#8b5cf6, #6d28d9); border-color: #5b21b6; padding: 8px 16px; font-size: 13px; cursor: pointer;">
-        🚀 一鍵無線投送至 iPhone 4s
+        🚀 無線投送至 iPhone 4s
       </button>
-      <div id="romUploadStatus" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></div>
+      <div id="romUploadStatus" style="margin-top: 10px; font-size: 12px; display: none;"></div>
     </div>
+  </div>
+
+  <!-- Mac 螢幕無線鏡像操控 (Veency) -->
+  <div class="section-card">
+    <div class="section-title">
+      <span>🖥️ Mac 螢幕無線鏡像操控</span>
+      <span class="tag" style="background: #0284c7;">VNC 雙向遙控</span>
+    </div>
+    <p style="font-size: 12px; color: #475569; margin: 4px 0 8px;">
+      在 Mac 上**完全不需安裝軟體**，只要在 Finder 按 <code>Cmd + K</code> 輸入：
+    </p>
+    <div style="background: #1e293b; color: #38bdf8; font-family: monospace; font-size: 14px; font-weight: bold; padding: 10px 14px; border-radius: 6px; text-align: center; margin-bottom: 8px;">
+      vnc://192.168.0.104
+    </div>
+    <p style="font-size: 11px; color: #64748b; margin: 0;">
+      🔑 預設連線密碼：<code>retro</code>。可在 Mac 螢幕上實時查看 iPhone 4s 畫面，並用 Mac 滑鼠鍵盤直接點擊打字！
+    </p>
   </div>
 
   <!-- Mac Finder 無線網路隨身碟 -->

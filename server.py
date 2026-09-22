@@ -315,19 +315,20 @@ def route_upload_rom():
     
     filename = secure_filename(file.filename)
     ext = os.path.splitext(filename)[1].lower()
-    if ext not in [".gba", ".gbc", ".gb", ".zip", ".nes"]:
-        return jsonify({"status": "error", "message": f"不支援的副檔名: {ext}，僅支援 .gba, .gbc, .zip, .nes"}), 400
+    if ext not in [".gba", ".gbc", ".gb", ".zip", ".nes", ".smc", ".sfc"]:
+        return jsonify({"status": "error", "message": f"不支援的副檔名: {ext}，僅支援 .gba, .gbc, .zip, .nes, .smc, .sfc"}), 400
     
     roms_dir = os.path.join(BASE_DIR, "roms")
     os.makedirs(roms_dir, exist_ok=True)
     local_path = os.path.join(roms_dir, filename)
     file.save(local_path)
     
-    # Push to iPhone 4s WebDAV / Media / Documents
+    # Push to iPhone 4s WebDAV / Media / ROMs
     iphone_uploaded = False
     try:
         with open(local_path, "rb") as rf:
             rom_data = rf.read()
+        target_sub = "SNES" if ext in [".smc", ".sfc"] else "ROMs"
         dav_url = f"http://192.168.0.104/Media/ROMs/{urllib.parse.quote(filename)}"
         dav_req = urllib.request.Request(dav_url, data=rom_data, method="PUT")
         dav_req.add_header("Expect", "")
@@ -341,7 +342,7 @@ def route_upload_rom():
         "status": "ok",
         "filename": filename,
         "iphone_synced": iphone_uploaded,
-        "message": f"ROM [{filename}] 上傳成功！{'已即時無線注入 iPhone 4s，打開 GBA4iOS 即可開玩！' if iphone_uploaded else '已保存在伺服器！'}"
+        "message": f"遊戲 ROM [{filename}] 上傳成功！{'已即時無線注入 iPhone 4s，打開模擬器即可開玩！' if iphone_uploaded else '已保存在伺服器！'}"
     })
 
 @app.route("/roms/<path:filename>")
